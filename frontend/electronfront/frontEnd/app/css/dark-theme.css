@@ -1,0 +1,50 @@
+:root {
+  --bg-color: #1e1e2e;
+  --text-color: #e0e0e0;
+  --accent-color: #4f46e5;
+  --card-color: #2a2a40;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar {
+  width: 220px;
+  background: var(--card-color);
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding-top: 2rem;
+}
+
+.sidebar h2 {
+  font-size: 1.2rem;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 20px;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.main-content {
+  margin-left: 220px;
+  padding: 2rem;
+}
+
+h1 {
+  color: var(--accent-color);
+}

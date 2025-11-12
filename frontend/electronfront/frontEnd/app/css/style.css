@@ -1,0 +1,108 @@
+/* Estilos gerais */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Estilos do navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+/* Estilos do card de login */
+.card {
+    box-shadow: 0 0 15px rgba(0,0,0,.1);
+    border: none;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+/* Estilos dos formulários */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Estilos das tabelas */
+.table {
+    background-color: white;
+    box-shadow: 0 0 15px rgba(0,0,0,.1);
+}
+
+/* Estilos dos botões */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Estilos para mensagens de erro/sucesso */
+.alert {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Estilos para modais */
+.modal-content {
+    border: none;
+    box-shadow: 0 0 20px rgba(0,0,0,.2);
+}
+
+/* Estilos para área principal */
+#mainArea {
+    padding: 20px 0;
+}
+
+/* Estilos para cards de dashboard */
+.dashboard-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,.1);
+}
+
+/* Estilos para formulários de cadastro/edição */
+.form-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,.1);
+} 
+
+/* Dark Mode */
+.dark-mode {
+    background-color: #121212 !important;
+    color: #f1f1f1 !important;
+}
+
+.dark-mode .card {
+    background-color: #1e1e1e !important;
+    color: #f1f1f1 !important;
+}
+
+.dark-mode .modal-content {
+    background-color: #1e1e1e !important;
+    color: #f1f1f1 !important;
+}
+
+.dark-mode .form-control {
+    background-color: #2a2a2a !important;
+    color: #f1f1f1 !important;
+    border-color: #444 !important;
+}
+
+.dark-mode .form-control::placeholder {
+    color: #aaa;
+}
+
+.dark-mode .navbar {
+    background-color: #1e1e1e !important;
+}
+
