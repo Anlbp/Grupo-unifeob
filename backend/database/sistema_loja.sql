@@ -98,8 +98,8 @@ CREATE TABLE usuarios (
 
 INSERT INTO usuarios (nome, cpf, senha, tipo) VALUES
 ('Administrador Geral', '11144477735', '$2b$10$OdIGZPYWtXRwAZBnRIhkxuTf5WSNgE6m1BVMPOgHkL0tTPZwoCKAK', 'admin'),
-('Carlos Ricardo',       '22255599900', '$2b$10$ZQz/JUKQDOSNwuMXeRdRIeyZnSqkyka9/PrAMsBPY194RMkaUFV8e', 'gerente'),
-('Felipe Andrade',       '33388811155', '$2b$10$F1h7OzGpmjdZs4IMThNF2OeIEEf78HkahkpRn2rKULW.EiREXDETS', 'vendedor');
+('Carlos Ricardo', '22255599900', '$2b$10$ZQz/JUKQDOSNwuMXeRdRIeyZnSqkyka9/PrAMsBPY194RMkaUFV8e', 'gerente'),
+('Felipe Andrade', '33388811155', '$2b$10$F1h7OzGpmjdZs4IMThNF2OeIEEf78HkahkpRn2rKULW.EiREXDETS', 'vendedor');
 
 -- ======================================================
 -- CONSULTAS DE TESTE (opcionais)
