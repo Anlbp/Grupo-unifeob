@@ -1,12 +1,12 @@
 // ========================================================
-// PRELOAD OFICIAL - Ponte segura entre o Renderer (frontend)
-// e o Processo Principal (main.js) via IPC
+// PRELOAD OFICIAL - Ponte segura entre Renderer e Main
 // ========================================================
 const { contextBridge, ipcRenderer } = require('electron');
 
 // Expõe funções seguras no escopo global (window.api)
 contextBridge.exposeInMainWorld('api', {
-  // 🔹 LOGIN (agora envia CPF, compatível com backend)
+  
+  // 🔹 LOGIN (compatível com backend)
   login: async (cpf, password) => {
     try {
       const res = await ipcRenderer.invoke('auth:login', { cpf, password });
@@ -37,10 +37,28 @@ contextBridge.exposeInMainWorld('api', {
       console.error('[Preload] Erro em getAdminData:', err);
       return { ok: false, message: 'Erro ao buscar dados do admin.' };
     }
+  },
+
+  // 🔹 *** NOVO — ESCOLHER AVATAR ***
+  chooseAvatar: async () => {
+    try {
+      return await ipcRenderer.invoke('choose-avatar');
+    } catch (err) {
+      console.error('[Preload] Erro em chooseAvatar:', err);
+      return { canceled: true, filePaths: [] };
+    }
+  },
+
+  // 🔹 *** OPCIONAL — ALTERAR SENHA *** 
+  changePassword: async (cpf, idUser, novaSenha) => {
+    try {
+      return await ipcRenderer.invoke('auth:changePassword', { cpf, idUser, novaSenha });
+    } catch (err) {
+      console.error('[Preload] Erro em changePassword:', err);
+      return { ok: false, message: 'Erro ao alterar senha.' };
+    }
   }
 });
 
-// ========================================================
-// Log para confirmar que o preload foi carregado
-// ========================================================
+// Log para confirmar carregamento
 console.log('[Preload] auth.ipc.js carregado e bridge criada.');

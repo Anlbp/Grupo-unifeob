@@ -1,991 +1,487 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Casa das Portas e Janelas - Sistema</title>
+  <title>Sistema - Casa das Portas e Janelas</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    /* =========================
-       VARIÁVEIS DE TEMA
-       ========================= */
-       #themeToggleLogin {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: var(--panel-hover, #333);
-  color: var(--text, #fff);
-  font-size: 18px;
+  <!-- GOOGLE FONTS + MATERIAL ICONS -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+
+/* ============================================================
+     MATERIAL DESIGN 3 — TOKENS
+============================================================ */
+:root {
+  --md-primary: #1A73E8;
+  --md-on-primary: #ffffff;
+
+  --md-surface: #ffffff;
+  --md-surface-variant: #f1f3f4;
+  --md-on-surface: #202124;
+  --md-on-surface-variant: #5f6368;
+  --md-outline: rgba(0,0,0,0.16);
+
+  --avatar-bg: #8AB4F8;
+
+  --font-scale: 1;
+}
+
+/* ===================== DARK MODE ====================== */
+.light {
+  --md-surface: #121212;
+  --md-surface-variant: #1e1e1e;
+  --md-on-surface: #E8EAED;
+  --md-on-surface-variant: #B0B3B8;
+  --md-outline: rgba(255,255,255,0.12);
+  --avatar-bg: #3c4043;
+}
+
+/* ============================================================
+    GLOBAL
+============================================================ */
+
+body {
+  margin: 0;
+  background: var(--md-surface);
+  font-family: "Roboto", sans-serif;
+  color: var(--md-on-surface);
+  transition: 0.3s;
+  font-size: calc(16px * var(--font-scale));
+}
+
+* {
+  color: var(--md-on-surface);
+  box-sizing: border-box;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb {
+  background: var(--md-outline);
+  border-radius: 10px;
+}
+
+/* ============================================================
+    ESTILO UNIVERSAL — INPUTS MATERIAL YOU
+============================================================ */
+
+.mdui-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 18px; /* 🔥 Material YOU */
+  border: 1px solid var(--md-outline);
+  background: var(--md-surface-variant);
+  color: var(--md-on-surface);
+  font-size: calc(16px * var(--font-scale));
+  outline: none;
+  transition: 0.25s;
+}
+
+.mdui-input::placeholder {
+  color: var(--md-on-surface-variant);
+}
+
+.mdui-input:focus {
+  border: 1px solid var(--md-primary);
+  background: var(--md-surface-variant);
+}
+
+/* SELECT estilo Material You */
+.mdui-select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--md-outline);
+  background: var(--md-surface-variant) !important;
+  color: var(--md-on-surface) !important;
+  font-size: calc(16px * var(--font-scale));
+  outline: none;
+}
+
+/* ============================================================
+    MODAIS MATERIAL YOU — ALINHADOS E PADRONIZADOS
+============================================================ */
+
+.modal-card {
+  background: var(--md-surface);
+  padding: 32px;
+  border-radius: 26px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+  border: 1px solid var(--md-outline);
+  display: flex;
+  flex-direction: column;
+  gap: 14px; /* 🔥 espaçamento uniforme */
+  margin: auto;
+}
+
+.modal-card h2 {
+  text-align: center;
+  font-size: calc(24px * var(--font-scale));
+  color: var(--md-primary);
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
+/* BOTÕES */
+.md-btn-filled {
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
   border: none;
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-size: calc(17px * var(--font-scale));
   cursor: pointer;
+  margin-top: 12px;
+  transition: 0.2s;
+}
+
+.md-btn-text {
+  text-align: center;
+  background: none;
+  border: none;
+  font-size: calc(15px * var(--font-scale));
+  color: var(--md-primary);
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+/* ============================================================
+    LOGIN SCREEN
+============================================================ */
+
+#loginScreen {
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.3s;
-}
-#themeToggleLogin:hover {
-  background: #444;
+  padding: 20px;
 }
 
-    :root {
-      --bg: #121212;
-      --panel: #1e1e1e;
-      --panel-hover: #2a2a2a;
-      --text: #f5f5f5;
-      --text-dim: #ddd;
-      --muted: #aaa;
-      --border-soft: rgba(255,255,255,0.07);
-      --accent: #00bcd4;
-      --accent-hover: #0097a7;
-      --danger: #ff4d4d;
-      --danger-soft: #ff5252;
-      --ok: #00e676;
-      --input-bg: #2c2c2c;
-      --sidebar-bg: #1e1e1e;
-      --shadow: 0px 0px 20px rgba(0,0,0,0.6);
-      --shadow-strong: 0 0 15px rgba(0,0,0,0.6);
-      --topbar-shadow: 0 2px 8px rgba(0,0,0,0.2);
-
-      --role-admin: #ff5252;
-      --role-user: #00bcd4;
-      --role-tecnico: #9c27b0;
-      --role-gerente: #ffc107;
-
-      --font-scale: 1;
-    }
-
-    /* tema claro */
-    .light {
-      --bg: #f5f7fa;
-      --panel: #ffffff;
-      --panel-hover: #f0f0f0;
-      --text: #111;
-      --text-dim: #444;
-      --muted: #666;
-      --border-soft: rgba(0,0,0,0.1);
-      --accent: #00bcd4;
-      --accent-hover: #0097a7;
-      --danger: #e53935;
-      --danger-soft: #e53935;
-      --ok: #00c853;
-      --input-bg: #e9eef2;
-      --sidebar-bg: #ffffff;
-      --shadow: 0px 0px 20px rgba(0,0,0,0.15);
-      --shadow-strong: 0 10px 30px rgba(0,0,0,0.25);
-      --topbar-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-
-    /* =========================
-       GERAL
-       ========================= */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
-      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-size: calc(16px * var(--font-scale));
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* fade suave entre páginas */
-    .page {
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.25s ease;
-    }
-
-    .page.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    /* =========================
-       TOPBAR FIXA (aparece depois do login)
-       ========================= */
-    .topbar {
-      position: fixed;
-      top: 0;
-      left: 0; right: 0;
-      height: 60px;
-      background: var(--panel);
-      box-shadow: var(--topbar-shadow);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      z-index: 1000;
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    .top-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: bold;
-      color: var(--accent);
-      font-size: calc(18px * var(--font-scale));
-    }
-
-    /* campo de busca no menu lateral, mas mostramos do lado do nome p/ ficar visível */
-    .menu-search-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--panel-hover);
-      border: 1px solid var(--border-soft);
-      border-radius: 8px;
-      padding: 4px 8px;
-      font-size: calc(14px * var(--font-scale));
-      color: var(--text);
-    }
-    .menu-search-wrapper input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-size: calc(14px * var(--font-scale));
-      min-width: 140px;
-    }
-    .menu-search-wrapper span {
-      font-size: calc(14px * var(--font-scale));
-      opacity: 0.8;
-    }
-
-    .top-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .user-info {
-      text-align: right;
-      line-height: 1.2;
-    }
-    .user-name {
-      color: var(--text);
-      font-weight: bold;
-      font-size: calc(15px * var(--font-scale));
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* badge de função */
-    .role-badge {
-      font-size: calc(11px * var(--font-scale));
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      line-height: 1.2;
-    }
-
-    .role-admin { background: var(--role-admin); color: #000; }
-    .role-user { background: var(--role-user); color: #000; }
-    .role-tecnico { background: var(--role-tecnico); color: #fff; }
-    .role-gerente { background: var(--role-gerente); color: #000; }
-
-    .user-role {
-      color: var(--muted);
-      font-size: calc(12px * var(--font-scale));
-      font-weight: bold;
-    }
-
-    .avatar-wrapper {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid var(--border-soft);
-      background: #333;
-      cursor: pointer;
-      flex-shrink: 0;
-      box-shadow: 0 0 8px rgba(0,0,0,0.4);
-      position: relative;
-    }
-
-    /* moldura colorida por cargo */
-    .avatar-wrapper[data-role="admin"] {
-      box-shadow: 0 0 10px var(--role-admin), 0 0 3px var(--role-admin) inset;
-      border-color: var(--role-admin);
-    }
-    .avatar-wrapper[data-role="user"] {
-      box-shadow: 0 0 10px var(--role-user), 0 0 3px var(--role-user) inset;
-      border-color: var(--role-user);
-    }
-    .avatar-wrapper[data-role="tecnico"] {
-      box-shadow: 0 0 10px var(--role-tecnico), 0 0 3px var(--role-tecnico) inset;
-      border-color: var(--role-tecnico);
-    }
-    .avatar-wrapper[data-role="gerente"] {
-      box-shadow: 0 0 10px var(--role-gerente), 0 0 3px var(--role-gerente) inset;
-      border-color: var(--role-gerente);
-    }
-
-    .avatar-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .top-buttons {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .btn-top {
-      background: transparent;
-      border: 1px solid var(--border-soft);
-      color: var(--text);
-      min-width: 40px;
-      height: 36px;
-      padding: 0 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: calc(14px * var(--font-scale));
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
-
-    .btn-top.small-btn {
-      min-width: auto;
-      padding: 0 8px;
-      font-size: calc(13px * var(--font-scale));
-      font-weight: normal;
-    }
-
-    .btn-top:hover {
-      background: var(--panel-hover);
-    }
-
-    .accessibility-group {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .accessibility-group-label {
-      color: var(--muted);
-      font-size: calc(12px * var(--font-scale));
-      font-weight: bold;
-      line-height: 1;
-    }
-
-    /* esse wrapper reserva espaço pra topbar fixa */
-    .main-wrapper {
-      padding-top: 60px; /* espaço da topbar */
-    }
-
-    /* =========================
-       TELA DE LOGIN
-       ========================= */
-    .login-container {
-      min-height: calc(100vh - 60px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .login-box {
-      background: var(--panel);
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: var(--shadow);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      position: relative;
-      border: 1px solid var(--border-soft);
-    }
-
-    .login-box h1 {
-      margin-bottom: 20px;
-      color: var(--accent);
-      font-size: calc(26px * var(--font-scale));
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
-
-    .input-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-size: calc(18px * var(--font-scale));
-      color: var(--text-dim);
-      font-weight: bold;
-    }
-
-    .input-group input,
-    .input-group select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      font-size: calc(18px * var(--font-scale));
-      background: var(--input-bg);
-      color: var(--text);
-    }
-
-    .login-box button {
-      width: 100%;
-      padding: 14px;
-      background: var(--accent);
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      font-size: calc(18px * var(--font-scale));
-      cursor: pointer;
-      margin-top: 10px;
-      font-weight: bold;
-      box-shadow: 0 4px 14px rgba(0, 188, 212, 0.3);
-    }
-
-    .login-box button:hover {
-      background: var(--accent-hover);
-    }
-
-    .actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      gap: 10px;
-    }
-
-    .actions button {
-      width: 48%;
-      font-size: calc(16px * var(--font-scale));
-      background: #333;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .actions button:hover {
-      background: var(--panel-hover);
-    }
-
-    /* ===== Mensagem de erro com fade ===== */
-    .error-message {
-      background-color: var(--danger);
-      color: white;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      display: none;
-      font-weight: bold;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      text-align: center;
-      border: 1px solid rgba(0,0,0,0.2);
-      font-size: calc(14px * var(--font-scale));
-    }
-
-    .error-message.show {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* =========================
-       LAYOUT PRINCIPAL (após login)
-       ========================= */
-    .layout-area {
-      display: flex;
-      min-height: calc(100vh - 60px);
-    }
-
-    .sidebar {
-      width: 220px;
-      background: var(--sidebar-bg);
-      height: calc(100vh - 60px);
-      padding: 20px;
-      position: fixed;
-      top: 60px;
-      left: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-right: 1px solid var(--border-soft);
-    }
-
-    .sidebar h2 {
-      color: var(--accent);
-      margin-bottom: 20px;
-      font-size: calc(20px * var(--font-scale));
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* só no mobile você poderia mostrar a busca aqui também se quiser */
-    .sidebar .menu-search-wrapper {
-      margin-bottom: 15px;
-      width: 100%;
-    }
-
-    .sidebar nav a {
-      display: block;
-      padding: 12px;
-      margin-bottom: 10px;
-      text-decoration: none;
-      color: var(--text);
-      background: transparent;
-      border-radius: 6px;
-      font-size: calc(16px * var(--font-scale));
-      font-weight: bold;
-      opacity: 1;
-      transition: opacity 0.2s ease, background 0.2s ease;
-    }
-
-    .sidebar nav a:hover {
-      background: var(--accent);
-      color: #000;
-    }
-
-    .sidebar nav a.hidden-by-search {
-      display: none;
-    }
-
-    .content {
-      margin-left: 220px;
-      padding: 30px;
-      flex: 1;
-      min-height: calc(100vh - 60px);
-      background: var(--bg);
-      color: var(--text);
-      font-size: calc(16px * var(--font-scale));
-    }
-
-    .content h1 {
-      font-size: calc(28px * var(--font-scale));
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
-
-    .content p {
-      font-size: calc(16px * var(--font-scale));
-      color: var(--text);
-      line-height: 1.5;
-      margin-bottom: 8px;
-    }
-
-    .footer {
-      text-align: center;
-      font-size: calc(14px * var(--font-scale));
-      padding: 15px;
-      margin-top: 30px;
-      color: var(--muted);
-      font-weight: bold;
-      position: relative;
-    }
-
-    .footer-line {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .footer-version {
-      position: relative;
-      cursor: pointer;
-      color: var(--accent);
-      font-weight: bold;
-      font-size: calc(13px * var(--font-scale));
-    }
-
-    .footer-version:hover {
-      text-decoration: underline;
-    }
-
-    /* popover changelog */
-    .changelog-pop {
-      position: absolute;
-      bottom: 30px;
-      right: 0;
-      background: var(--panel);
-      color: var(--text);
-      border: 1px solid var(--border-soft);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-      padding: 12px 14px;
-      width: 250px;
-      font-size: calc(13px * var(--font-scale));
-      line-height: 1.4;
-      z-index: 9999;
-      display: none;
-    }
-
-    .changelog-pop h4 {
-      margin: 0 0 8px 0;
-      font-size: calc(14px * var(--font-scale));
-      font-weight: bold;
-      color: var(--accent);
-    }
-
-    .changelog-pop ul {
-      list-style: none;
-      padding-left: 0;
-      margin: 0;
-    }
-    .changelog-pop li {
-      margin-bottom: 6px;
-    }
-    .changelog-pop small {
-      color: var(--muted);
-      font-size: calc(12px * var(--font-scale));
-      font-weight: normal;
-    }
-
-    /* =========================
-       MODAL REDEFINIÇÃO DE SENHA
-       ========================= */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-    }
-
-    .modal-content {
-      background: var(--panel);
-      padding: 25px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: var(--shadow-strong);
-      animation: fadeIn 0.4s ease;
-      border: 1px solid var(--border-soft);
-      position: relative;
-    }
-
-    .modal-title {
-      font-size: calc(20px * var(--font-scale));
-      font-weight: bold;
-      color: var(--accent);
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    .modal-text {
-      color: var(--text);
-      font-size: calc(15px * var(--font-scale));
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .modal-content select,
-    .modal-content input {
-      width: 100%;
-      margin: 8px 0;
-      padding: 10px;
-      font-size: calc(16px * var(--font-scale));
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      background: var(--input-bg);
-      color: var(--text);
-    }
-
-    .modal-content button {
-      margin-top: 10px;
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      background: var(--accent);
-      color: #fff;
-      font-weight: bold;
-      font-size: calc(16px * var(--font-scale));
-      box-shadow: 0 4px 14px rgba(0,188,212,0.3);
-    }
-
-    .modal-content button:hover {
-      background: var(--accent-hover);
-    }
-
-    .row-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .row-buttons button {
-      flex: 1;
-    }
-
-    .success-message {
-      color: var(--ok);
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: calc(14px * var(--font-scale));
-      text-align: center;
-    }
-
-    .error-modal {
-      color: var(--danger-soft);
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: calc(14px * var(--font-scale));
-      text-align: center;
-    }
-
-    /* =========================
-       MODAL CONFIRMAR LOGOUT
-       ========================= */
-    #logoutModal .modal-content {
-      max-width: 360px;
-    }
-
-    .confirm-area {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .btn-confirm {
-      flex: 1;
-      background: var(--danger);
-      box-shadow: 0 4px 14px rgba(255,0,0,0.3);
-    }
-
-    .btn-cancel {
-      flex: 1;
-      background: var(--panel-hover);
-      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-    }
-
-    .btn-cancel:hover {
-      background: var(--panel-hover);
-      filter: brightness(1.1);
-    }
-
-    /* =========================
-       SIDEBAR PERFIL (PAINEL LATERAL)
-       ========================= */
-    #perfilSidebar {
-      position: fixed;
-      top: 0;
-      right: -350px; /* escondido inicialmente */
-      width: 320px;
-      height: 100%;
-      background: var(--panel);
-      box-shadow: -4px 0 12px rgba(0,0,0,0.5);
-      padding: 20px;
-      transition: right 0.3s ease;
-      z-index: 3000;
-      display: flex;
-      flex-direction: column;
-      color: var(--text);
-      border-left: 1px solid var(--border-soft);
-    }
-
-    #perfilSidebar.show {
-      right: 0;
-    }
-
-    .perfil-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 10px;
-      margin-bottom: 15px;
-    }
-
-    .perfil-header h2 {
-      font-size: calc(20px * var(--font-scale));
-      color: var(--accent);
-    }
-
-    .close-btn {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-size: calc(20px * var(--font-scale));
-      cursor: pointer;
-    }
-
-    .perfil-body {
-      flex: 1;
-      overflow-y: auto;
-    }
-
-    .perfil-foto-wrapper {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 15px auto;
-      border-radius: 50%;
-      padding: 4px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0) 70%);
-    }
-
-    .perfil-foto {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
-      border: 3px solid var(--accent);
-      background: #333;
-    }
-
-    #perfilSidebar p {
-      margin: 8px 0;
-      font-size: calc(16px * var(--font-scale));
-      color: var(--text);
-      font-weight: normal;
-    }
-
-    #perfilSidebar p strong {
-      color: var(--accent);
-    }
-
-    .alterar-foto,
-    .logout-btn-sidebar,
-    .fechar-sidebar-btn {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      font-size: calc(16px * var(--font-scale));
-      font-weight: bold;
-      margin-top: 12px;
-      cursor: pointer;
-      color: #fff;
-    }
-
-    .alterar-foto {
-      background: var(--accent);
-      box-shadow: 0 4px 14px rgba(0,188,212,0.3);
-    }
-
-    .alterar-foto:hover {
-      background: var(--accent-hover);
-    }
-
-    .logout-btn-sidebar {
-      background: var(--danger-soft);
-      box-shadow: 0 4px 14px rgba(255,82,82,0.3);
-    }
-
-    .fechar-sidebar-btn {
-      background: var(--panel-hover);
-      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-    }
-
-    /* =========================
-       MODAL PRÉ-VISUALIZAÇÃO DE AVATAR
-       ========================= */
-    #avatarPreviewModal img {
-      border-radius: 8px;
-      max-width: 200px;
-      max-height: 200px;
-      border: 2px solid var(--accent);
-      background: #000;
-      object-fit: cover;
-      display: block;
-      margin: 0 auto 15px auto;
-    }
-
-    /* =========================
-       TOAST (notificações)
-       ========================= */
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      min-width: 200px;
-      max-width: 280px;
-      background: var(--panel);
-      color: var(--text);
-      border: 1px solid var(--border-soft);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-      padding: 12px 14px;
-      font-size: calc(14px * var(--font-scale));
-      font-weight: bold;
-      line-height: 1.4;
-      opacity: 0;
-      transform: translateY(20px);
-      pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      z-index: 4000;
-    }
-
-    #toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    #toast .toast-title {
-      color: var(--accent);
-      font-size: calc(13px * var(--font-scale));
-      margin-bottom: 4px;
-    }
-
-    #toast .toast-msg {
-      color: var(--text);
-      font-size: calc(14px * var(--font-scale));
-    }
-
-  </style>
-
+.md-login-card {
+  background: var(--md-surface);
+  padding: 40px;
+  border-radius: 28px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  border: 1px solid var(--md-outline);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.md-login-card h1 {
+  margin-bottom: 8px;
+  font-size: calc(28px * var(--font-scale));
+  color: var(--md-primary);
+  text-align: center;
+}
+
+/* ============================================================
+     TOPBAR / SIDEBAR (SEM ALTERAÇÕES)
+============================================================ */
+
+.md-topbar {
+  height: 64px;
+  background: var(--md-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--md-outline);
+}
+
+.md-topbar * {
+  color: var(--md-on-surface) !important;
+}
+
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.top-right .material-icons {
+  font-size: calc(24px * var(--font-scale));
+  cursor: pointer;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--avatar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.md-layout {
+  display: flex;
+  height: calc(100vh - 64px);
+}
+
+.md-nav-rail {
+  width: 80px;
+  background: var(--md-surface);
+  border-right: 1px solid var(--md-outline);
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.md-nav-rail button {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 20px 0;
+  cursor: pointer;
+  color: var(--md-on-surface-variant);
+}
+
+.md-nav-rail button.selected {
+  color: var(--md-primary);
+  border-left: 4px solid var(--md-primary);
+  background: var(--md-surface-variant);
+}
+
+.md-main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.page h1 {
+  font-size: calc(28px * var(--font-scale));
+  margin-bottom: 12px;
+  color: var(--md-primary);
+}
+
+.md-card {
+  background: var(--md-surface);
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--md-outline);
+  margin-bottom: 20px;
+  font-size: calc(16px * var(--font-scale));
+}
+
+</style>
 </head>
 <body>
 
-  <!-- =========================
-       TOPBAR (mostrada só após login)
-       ========================= -->
+<!-- ======================================================
+      T O P B A R
+====================================================== -->
+<div class="md-topbar" id="topbarArea" style="display:none;">
 
-  <div class="topbar hidden" id="topbarArea">
-    <div class="top-left">
-      <div>Casa das Portas e Janelas</div>
+  <div class="top-left" style="font-size:calc(20px * var(--font-scale));">
+    Casa das Portas e Janelas
+  </div>
 
+  <div class="top-right">
 
-  <!-- busca do menu -->
-  <div class="menu-search-wrapper">
-    <span>🔍</span>
-    <input
-      type="text"
-      id="menuSearchInput"
-      placeholder="Buscar no menu..."
-    />
+    <!-- NOME + FUNÇÃO -->
+    <div id="topUserNameBox" style="text-align:right;margin-right:12px;">
+      <div id="topUserNameText" style="font-size:calc(15px * var(--font-scale));font-weight:bold;"></div>
+      <div id="topUserRoleText" style="font-size:calc(13px * var(--font-scale));"></div>
+    </div>
+
+    <!-- AVATAR -->
+    <div class="avatar" id="avatarArea">
+      <span class="material-icons" id="avatarIcon" style="color:white;">person</span>
+      <img id="avatarImg" src="" style="display:none;">
+    </div>
+
+    <!-- FONT + -->
+    <span class="material-icons" id="fontPlusBtn"
+      style="cursor:pointer;font-size:calc(24px * var(--font-scale));margin-left:15px;">
+      zoom_in
+    </span>
+
+    <!-- FONT - -->
+    <span class="material-icons" id="fontMinusBtn"
+      style="cursor:pointer;font-size:calc(24px * var(--font-scale));margin-left:10px;">
+      zoom_out
+    </span>
+
+    <!-- THEME -->
+    <span class="material-icons" id="themeToggle"
+      style="cursor:pointer;font-size:calc(24px * var(--font-scale));margin-left:10px;">
+      dark_mode
+    </span>
+
+    <!-- LOGOUT -->
+    <span class="material-icons" id="logoutBtn"
+      style="cursor:pointer;font-size:calc(24px * var(--font-scale));margin-left:10px;">
+      logout
+    </span>
+
   </div>
 </div>
 
-<div class="top-right">
-  <div class="user-info">
-    <div class="user-name" id="topUserName">
-      Usuário
-      <span class="role-badge role-user" id="roleBadge">USER</span>
-    </div>
-    <div class="user-role" id="topUserRole">Função</div>
-  </div>
+<!-- ======================================================
+      L O G I N
+====================================================== -->
 
-  <div
-    class="avatar-wrapper"
-    id="avatarArea"
-    title="Clique para ver seu perfil"
-    data-role="user"
-  >
-    <img id="avatarImg" src="" alt="Avatar">
-  </div>
+<div id="loginScreen" style="display:flex;">
 
-  <div class="top-buttons">
-    <!-- Grupo acessibilidade -->
-    <div class="accessibility-group">
-      <span class="accessibility-group-label">Acessibilidade:</span>
-      <button class="btn-top small-btn" id="fontPlusBtn" title="Aumentar fonte">A+</button>
-      <button class="btn-top small-btn" id="fontMinusBtn" title="Diminuir fonte">A-</button>
-    </div>
-
-    <!-- Tema e logout -->
-    <button class="btn-top" id="themeToggle" title="Tema claro/escuro">🌙</button>
-    <button class="btn-top" id="logoutBtn" title="Sair">Sair</button>
-  </div>
-</div>
-
-
-  </div>
-
-  <!-- wrapper pra respeitar altura da topbar -->
-
-  <div class="main-wrapper">
-
-
-<!-- ===== Tela de Login ===== -->
-<div class="login-container" id="loginScreen">
-  <div class="login-box">
-    <button class="btn-top" id="themeToggleLogin" title="Tema claro/escuro">🌙</button>
+  <div class="md-login-card">
 
     <h1>Login</h1>
 
-    <div class="error-message" id="errorMsg">CPF ou senha incorretos.</div>
+    <input id="cpfInput" class="mdui-input" placeholder="CPF">
+    <input id="senhaInput" type="password" class="mdui-input" placeholder="Senha">
 
-    <div class="input-group">
-      <label for="cpfInput">CPF (somente números)</label>
-      <input type="text" id="cpfInput" maxlength="11" placeholder="Digite seu CPF">
-    </div>
+    <button class="md-btn-filled" onclick="doLogin()">Entrar</button>
 
-    <div class="input-group">
-      <label for="senhaInput">Senha</label>
-      <input type="password" id="senhaInput" placeholder="Digite sua senha">
-    </div>
-
-    <button onclick="doLogin(event)">Entrar</button>
-
-    <div class="actions">
-  <button onclick="abrirRecuperacao()" 
-    style="
-      display: block;
-      width: 100%;
-      padding: 12px;
-      background-color: #007bff;
-      border: none;
-      color: white;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    "
-    onmouseover="this.style.backgroundColor='#0056b3';"
-    onmouseout="this.style.backgroundColor='#007bff';">
-    Esqueci a senha
-  </button>
-</div>
+    <button class="md-btn-text" onclick="abrirRecuperacao()">
+      Esqueci minha senha
+    </button>
 
   </div>
+
 </div>
 
-<!-- ===== Modal redefinição de senha ===== -->
-<div class="modal" id="modalRecuperar">
-  <div class="modal-content">
-    <h2 class="modal-title">Redefinir Senha</h2>
-    <p class="modal-text">Confirme seus dados para criar uma nova senha.</p>
+<!-- ======================================================
+      L A Y O U T   PRINCIPAL
+====================================================== -->
 
-    <select id="funcaoRecuperar">
+<div class="md-layout" id="mainApp" style="display:none;">
+
+  <!-- NAVIGATION RAIL -->
+  <aside class="md-nav-rail">
+
+    <button onclick="abrirPagina('dashboard')" data-page="dashboard" class="nav-item selected">
+      <span class="material-icons">dashboard</span>
+    </button>
+
+    <button onclick="abrirPagina('clientes')" data-page="clientes" class="nav-item">
+      <span class="material-icons">people</span>
+    </button>
+
+    <button onclick="abrirPagina('produtos')" data-page="produtos" class="nav-item">
+      <span class="material-icons">inventory_2</span>
+    </button>
+
+    <button onclick="abrirPagina('vendas')" data-page="vendas" class="nav-item">
+      <span class="material-icons">shopping_cart</span>
+    </button>
+
+    <button onclick="abrirCadastro()" data-page="adminCadastro" class="nav-item">
+      <span class="material-icons">person_add</span>
+    </button>
+
+  </aside>
+
+  <!-- ======================================================
+        P Á G I N A S
+  ====================================================== -->
+  <main class="md-main">
+
+    <!-- DASHBOARD -->
+    <div class="page" id="dashboard" style="display:block;">
+      <h1>Dashboard</h1>
+      <div class="md-card">Bem-vindo ao painel geral.</div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="page" id="clientes" style="display:none;">
+      <h1>Clientes</h1>
+      <div class="md-card">Gerenciamento de clientes.</div>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div class="page" id="produtos" style="display:none;">
+      <h1>Produtos</h1>
+      <div class="md-card">Controle de produtos.</div>
+    </div>
+
+    <!-- VENDAS -->
+    <div class="page" id="vendas" style="display:none;">
+      <h1>Vendas</h1>
+      <div class="md-card">Histórico e registro de vendas.</div>
+    </div>
+
+    <!-- CADASTRO ADMIN -->
+    <div class="page" id="adminCadastro" style="display:none;">
+      <h1>Cadastrar Usuário</h1>
+      <div class="md-card">
+        Área para adicionar novos usuários ao sistema.
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ======================================================
+      S I D E B A R   D E   P E R F I L
+====================================================== -->
+
+<div id="perfilSidebar" style="
+  position:fixed;
+  top:0;
+  right:-350px;
+  width:320px;
+  height:100%;
+  background:var(--md-surface);
+  border-left:1px solid var(--md-outline);
+  box-shadow:-4px 0 16px rgba(0,0,0,0.3);
+  padding:20px;
+  transition:0.3s;
+  z-index:3000;
+">
+
+  <h2 style="color:var(--md-primary);font-size:calc(22px * var(--font-scale));">Perfil</h2>
+
+  <div style="display:flex;justify-content:center;margin:20px 0;">
+    <div class="avatar" style="width:90px;height:90px;background:var(--avatar-bg);">
+      <span id="perfilAvatarIcon" class="material-icons" style="color:white;font-size:50px;">person</span>
+      <img id="perfilAvatar" src="" style="display:none;width:100%;height:100%;border-radius:50%;">
+    </div>
+  </div>
+
+  <p><b>Nome:</b> <span id="perfilNome"></span></p>
+  <p><b>Função:</b> <span id="perfilFuncao"></span></p>
+  <p><b>CPF:</b> <span id="perfilCPF"></span></p>
+
+  <button onclick="alterarAvatar()" class="md-btn-filled" style="margin-top:20px;">Alterar Foto</button>
+  <button onclick="pedirLogout()" class="md-btn-filled" style="margin-top:12px;background:#d93025;">Sair</button>
+  <button onclick="fecharPerfilSidebar()" class="md-btn-text" style="margin-top:10px;">Fechar</button>
+
+</div>
+<!-- ======================================================
+      M O D A I S  (RECUPERAÇÃO, CADASTRO, AVATAR, LOGOUT)
+====================================================== -->
+
+<!-- MODAL RECUPERAÇÃO SENHA -->
+<div id="modalRecuperar" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center; align-items:center;
+  z-index:4000;
+">
+  <div class="modal-card">
+
+    <h2>Recuperar Senha</h2>
+
+    <select id="funcaoRecuperar" class="mdui-select">
       <option value="">Selecione sua função</option>
       <option value="admin">Administrador</option>
       <option value="user">Usuário</option>
@@ -993,520 +489,357 @@
       <option value="gerente">Gerente</option>
     </select>
 
-    <input type="text" id="idRecuperar" placeholder="ID do usuário">
-    <input type="text" id="cpfRecuperar" placeholder="CPF (somente números)">
-    <input type="password" id="novaSenha" placeholder="Nova senha">
-    <input type="password" id="confirmarSenha" placeholder="Confirmar nova senha">
+    <input id="idRecuperar" class="mdui-input" placeholder="ID do usuário">
+    <input id="cpfRecuperar" class="mdui-input" placeholder="CPF">
+    <input id="novaSenha" type="password" class="mdui-input" placeholder="Nova senha">
+    <input id="confirmarSenha" type="password" class="mdui-input" placeholder="Confirmar senha">
 
-    <div class="row-buttons">
-      <button onclick="confirmarRecuperacao()">Alterar Senha</button>
-      <button class="btn-cancel" onclick="fecharRecuperacao()">Cancelar</button>
-    </div>
+    <button onclick="confirmarRecuperacao()" class="md-btn-filled">Alterar Senha</button>
+    <button onclick="fecharRecuperacao()" class="md-btn-text">Cancelar</button>
 
-    <div class="success-message" id="msgSucesso"></div>
-    <div class="error-modal" id="msgErro"></div>
   </div>
 </div>
 
-<!-- ===== Modal CADASTRO (somente administrador pode confirmar) ===== -->
-<div class="modal" id="modalCadastro">
-  <div class="modal-content">
-    <h2 class="modal-title">Cadastro de Usuário</h2>
-    <p class="modal-text">Preencha os dados do novo usuário. Apenas administradores podem confirmar o cadastro.</p>
 
-    <select id="cadFuncao">
-      <option value="">Função do novo usuário</option>
+<!-- MODAL CADASTRO -->
+<div id="modalCadastro" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center; align-items:center;
+  z-index:4000;
+">
+  <div class="modal-card">
+
+    <h2>Cadastrar Usuário</h2>
+
+    <select id="cadFuncao" class="mdui-select">
+      <option value="">Função</option>
       <option value="admin">Administrador</option>
       <option value="user">Usuário</option>
       <option value="tecnico">Técnico</option>
       <option value="gerente">Gerente</option>
     </select>
 
-    <input type="text" id="cadNome" placeholder="Nome completo">
-    <input type="text" id="cadCPF" placeholder="CPF (somente números)">
-    <input type="password" id="cadSenha" placeholder="Senha inicial">
+    <input id="cadNome" class="mdui-input" placeholder="Nome">
+    <input id="cadCPF" class="mdui-input" placeholder="CPF">
+    <input id="cadSenha" type="password" class="mdui-input" placeholder="Senha">
 
-    <!-- Mensagem que aparece se quem está logado NÃO for admin -->
-    <div class="error-modal" id="cadPermissaoMsg" style="display:none;">
-      Apenas administradores podem confirmar o cadastro.
-    </div>
+    <button onclick="confirmarCadastro()" class="md-btn-filled">Cadastrar</button>
+    <button onclick="fecharCadastro()" class="md-btn-text">Cancelar</button>
 
-    <div class="row-buttons">
-      <button id="btnConfirmarCadastro" onclick="confirmarCadastro()">Cadastrar</button>
-      <button class="btn-cancel" onclick="fecharCadastro()">Cancelar</button>
-    </div>
-
-    <div class="success-message" id="cadSucesso"></div>
-    <div class="error-modal" id="cadErro"></div>
-  </div>
-</div>
-
-<!-- ===== Modal confirmação de logout ===== -->
-<div class="modal" id="logoutModal">
-  <div class="modal-content">
-    <div class="modal-title">Sair do sistema?</div>
-    <div class="modal-text">Você tem certeza que deseja encerrar sua sessão agora?</div>
-    <div class="confirm-area">
-      <button class="btn-confirm" onclick="logoutConfirmado()">Sim, sair</button>
-      <button class="btn-cancel" onclick="fecharLogoutModal()">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== Modal pré-visualização do avatar ===== -->
-<div class="modal" id="avatarPreviewModal">
-  <div class="modal-content">
-    <div class="modal-title">Confirmar nova foto?</div>
-    <img id="avatarPreview" src="" alt="Pré-visualização do avatar">
-
-    <div class="confirm-area">
-      <button class="btn-confirm" id="confirmAvatarBtn">Usar essa foto</button>
-      <button class="btn-cancel" id="cancelAvatarBtn">Cancelar</button>
-    </div>
-
-    <div class="success-message" id="avatarMsgSucesso"></div>
-    <div class="error-modal" id="avatarMsgErro"></div>
-  </div>
-</div>
-
-<!-- ===== Sistema Principal ===== -->
-<div class="layout-area hidden" id="mainApp">
-  <div class="sidebar">
-    <div>
-      <h2>
-        Menu
-      </h2>
-
-      <!-- (a busca também está na topbar; se quiser só mobile pode esconder aqui no desktop via media query) -->
-      <div class="menu-search-wrapper">
-        <span>🔍</span>
-        <input
-          type="text"
-          id="menuSearchInputSide"
-          placeholder="Buscar..."
-        />
-      </div>
-
-      <nav id="sideMenu">
-        <a href="#" data-page="dashboard" onclick="abrirPagina('dashboard')">Dashboard</a>
-        <a href="#" data-page="clientes" onclick="abrirPagina('clientes')">Clientes</a>
-        <a href="#" data-page="produtos" onclick="abrirPagina('produtos')">Produtos</a>
-        <a href="#" data-page="vendas" onclick="abrirPagina('vendas')">Vendas</a>
-        <a href="#" data-page="adminCadastro" onclick="abrirCadastro()">Cadastrar Usuário</a>
-      </nav>
-    </div>
-
-    <div class="footer">
-      <div class="footer-line">
-        <span>© 2025 Casa das Portas e Janelas</span>
-        <span
-          class="footer-version"
-          id="changelogToggle"
-          title="Ver alterações da versão"
-        >
-          v1.0.4 ⓘ
-        </span>
-
-        <div class="changelog-pop" id="changelogPop">
-          <h4>Changelog (v1.0.4)</h4>
-          <ul>
-            <li>• Tema claro/escuro salvo</li>
-            <li>• Upload de avatar com confirmação</li>
-            <li>• Busca no menu lateral</li>
-            <li>• Toasts de ação</li>
-            <li>• Confirmação de logout</li>
-            <li>• Painel lateral de perfil</li>
-            <li>• Modal de cadastro de usuário (admin)</li>
-            <li>• Acessibilidade: ajuste de fonte e </li>
-          </ul>
-          <small>Última atualização: 30/10/2025</small>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="content">
-    <!-- Dashboard -->
-    <div id="dashboard" class="page active">
-      <h1>Dashboard</h1>
-      <p>Aqui você verá um resumo geral do sistema.</p>
-      <p>Status rápido, últimas vendas, avisos internos etc.</p>
-    </div>
-
-    <!-- Clientes -->
-    <div id="clientes" class="page">
-      <h1>Clientes</h1>
-      <p>Área para gerenciar clientes cadastrados.</p>
-      <p>(futuro: tabela de clientes, botão "novo cliente")</p>
-    </div>
-
-    <!-- Produtos -->
-    <div id="produtos" class="page">
-      <h1>Produtos</h1>
-      <p>Cadastro e estoque de produtos.</p>
-      <p>(futuro: lista de produtos, níveis de estoque, alerta de baixo estoque)</p>
-    </div>
-
-    <!-- Vendas -->
-    <div id="vendas" class="page">
-      <h1>Vendas</h1>
-      <p>Histórico e controle de vendas.</p>
-      <p>(futuro: listagem de O.S., status pagamento, gerar nota)</p>
-    </div>
-
-    <!-- Admin Cadastro (apenas abre modal, não é uma página de conteúdo por enquanto) -->
-    <div id="adminCadastro" class="page">
-      <h1>Cadastro de Usuários</h1>
-      <p>Use o botão no menu lateral ou na tela de login para cadastrar novos usuários (apenas administradores).</p>
-    </div>
   </div>
 </div>
 
 
-  </div> <!-- /main-wrapper -->
+<!-- MODAL AVATAR PREVIEW -->
+<div id="avatarPreviewModal" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center; align-items:center;
+  z-index:4000;
+">
+  <div class="modal-card" style="text-align:center;">
 
-  <!-- ===== Painel lateral de perfil ===== -->
+    <h2>Confirmar Foto</h2>
 
-  <div id="perfilSidebar">
-    <div class="perfil-header">
-      <h2>Perfil do Usuário</h2>
-      <button class="close-btn" onclick="fecharPerfilSidebar()">✕</button>
-    </div>
-    <div class="perfil-body">
-      <div class="perfil-foto-wrapper">
-        <img id="perfilAvatar" src="" alt="Avatar do Usuário" class="perfil-foto">
-      </div>
-      <p><strong>Nome:</strong> <span id="perfilNome"></span></p>
-      <p><strong>Função:</strong> <span id="perfilFuncao"></span></p>
-      <p><strong>CPF:</strong> <span id="perfilCPF"></span></p>
+    <img id="avatarPreview" src="" style="
+      max-width:200px; max-height:200px;
+      margin:15px auto;
+      border-radius:16px;
+      border:2px solid var(--md-primary);
+    ">
 
+    <button id="confirmAvatarBtn" class="md-btn-filled">Usar Foto</button>
+    <button id="cancelAvatarBtn" class="md-btn-text">Cancelar</button>
 
-  <button class="alterar-foto" onclick="alterarAvatar()">Alterar Foto</button>
-  <button class="logout-btn-sidebar" onclick="pedirLogout()">Sair da Conta</button>
-  <button class="fechar-sidebar-btn" onclick="fecharPerfilSidebar()">Fechar</button>
+  </div>
 </div>
 
 
+<!-- MODAL LOGOUT -->
+<div id="logoutModal" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center; align-items:center;
+  z-index:4000;
+">
+  <div class="modal-card" style="text-align:center;">
+
+    <h2>Sair?</h2>
+    <p style="margin:10px 0 20px 0;">Deseja encerrar sessão?</p>
+
+    <button onclick="logoutConfirmado()" class="md-btn-filled" style="background:#d93025;">
+      Sim
+    </button>
+
+    <button onclick="fecharLogoutModal()" class="md-btn-text">
+      Cancelar
+    </button>
+
   </div>
+</div>
 
-  <!-- Toast -->
 
-  <div id="toast">
-    <div class="toast-title" id="toastTitle">Sucesso</div>
-    <div class="toast-msg" id="toastMsg">Ação realizada.</div>
-  </div>
+<!-- ======================================================
+      T O A S T
+====================================================== -->
+<div id="toast" style="
+  position:fixed; bottom:20px; right:20px;
+  background:var(--md-surface);
+  border:1px solid var(--md-outline);
+  border-radius:16px;
+  padding:14px 18px;
+  min-width:200px;
+  opacity:0;
+  transform:translateY(20px);
+  transition:0.3s;
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  z-index:6000;
+">
+  <div id="toastTitle" style="font-weight:bold;color:var(--md-primary);margin-bottom:4px;"></div>
+  <div id="toastMsg"></div>
+</div>
+<script>
 
-  <script>
+/* =====================================================================
+      CONSTANTES
+===================================================================== */
+const THEME_KEY = 'app_theme_v1';
+const FONT_SCALE_KEY = 'app_font_scale_v1';
+const AVATAR_KEY_PREFIX = 'avatar_path_';
+let currentUser = null;
+let pendingAvatarPath = null;
 
-    function applyTheme(theme) {
-  if (theme === 'light') {
-    document.documentElement.classList.add('light');
-    const btn1 = document.getElementById('themeToggle');
-    const btn2 = document.getElementById('themeToggleLogin');
-    if (btn1) btn1.textContent = '☀️';
-    if (btn2) btn2.textContent = '☀️';
+/* =====================================================================
+      TEMA (CLARO / ESCURO)
+===================================================================== */
+function applyTheme(theme) {
+  if (theme === "light") {
+    document.documentElement.classList.add("light");
+    document.getElementById("themeToggle").textContent = "light_mode";
   } else {
-    document.documentElement.classList.remove('light');
-    const btn1 = document.getElementById('themeToggle');
-    const btn2 = document.getElementById('themeToggleLogin');
-    if (btn1) btn1.textContent = '🌙';
-    if (btn2) btn2.textContent = '🌙';
+    document.documentElement.classList.remove("light");
+    document.getElementById("themeToggle").textContent = "dark_mode";
   }
-  localStorage.setItem('app_theme_v1', theme);
+  localStorage.setItem(THEME_KEY, theme);
 }
 
 function toggleTheme() {
-  const current = localStorage.getItem('app_theme_v1') || 'dark';
-  const next = current === 'light' ? 'dark' : 'light';
+  const saved = localStorage.getItem(THEME_KEY) || "dark";
+  const next = saved === "light" ? "dark" : "light";
   applyTheme(next);
 }
 
-    // =============================
-    // ESTADO GLOBAL
-    // =============================
-    let currentToken = null;
-    let currentUser = null; // {id, name, role, cpf}
-    const THEME_KEY = 'app_theme_v1';
-    const AVATAR_KEY_PREFIX = 'avatar_path_'; // salva avatar por CPF
-    const FONT_SCALE_KEY = 'app_font_scale_v1';
+/* =====================================================================
+      TAMANHO DE FONTE GLOBAL (ACESSIBILIDADE)
+===================================================================== */
+function applyFontScale(scale) {
+  if (scale < 0.8) scale = 0.8;
+  if (scale > 1.6) scale = 1.6;
 
-    // pré-visualização temporária escolhida no file dialog
-    let pendingAvatarPath = null;
+  document.documentElement.style.setProperty('--font-scale', scale);
+  localStorage.setItem(FONT_SCALE_KEY, scale);
+}
 
-    // =============================
-    // TEMA ESCURO/CLARO
-    // =============================
-    function applyTheme(theme) {
-      if (theme === 'light') {
-        document.documentElement.classList.add('light');
-        document.getElementById('themeToggle').textContent = '☀️';
-      } else {
-        document.documentElement.classList.remove('light');
-        document.getElementById('themeToggle').textContent = '🌙';
-      }
-      localStorage.setItem(THEME_KEY, theme);
-    }
+function increaseFont() {
+  const cur = parseFloat(localStorage.getItem(FONT_SCALE_KEY) || "1");
+  applyFontScale(cur + 0.1);
+}
 
-    function toggleTheme() {
-      const current = localStorage.getItem(THEME_KEY) || 'dark';
-      const next = current === 'light' ? 'dark' : 'light';
-      applyTheme(next);
-      showToast('Tema alterado', next === 'light' ? 'Claro ativado' : 'Escuro ativado');
-    }
+function decreaseFont() {
+  const cur = parseFloat(localStorage.getItem(FONT_SCALE_KEY) || "1");
+  applyFontScale(cur - 0.1);
+}
 
-    // =============================
-    // ACESSIBILIDADE - FONTE
-    // =============================
-    function applyFontScale(scale) {
-      if (scale < 0.8) scale = 0.8;
-      if (scale > 1.6) scale = 1.6;
-      document.documentElement.style.setProperty('--font-scale', scale.toString());
-      localStorage.setItem(FONT_SCALE_KEY, scale.toString());
-      showToast('Acessibilidade', 'Tamanho de fonte ajustado');
-    }
-
-    function increaseFont() {
-      const current = parseFloat(localStorage.getItem(FONT_SCALE_KEY) || '1');
-      const next = current + 0.1;
-      applyFontScale(next);
-    }
-
-    function decreaseFont() {
-      const current = parseFloat(localStorage.getItem(FONT_SCALE_KEY) || '1');
-      const next = current - 0.1;
-      applyFontScale(next);
-    }
-
-// =============================
-// TOAST
-// =============================
+/* =====================================================================
+      TOAST
+===================================================================== */
 let toastTimeout = null;
+
 function showToast(title, msg) {
-  const toast = document.getElementById('toast');
-  const tTitle = document.getElementById('toastTitle');
-  const tMsg = document.getElementById('toastMsg');
+  const t = document.getElementById("toast");
+  document.getElementById("toastTitle").textContent = title;
+  document.getElementById("toastMsg").textContent = msg;
 
-  tTitle.textContent = title;
-  tMsg.textContent = msg;
-
-  toast.classList.add('show');
+  t.style.opacity = "1";
+  t.style.transform = "translateY(0px)";
 
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => {
-    toast.classList.remove('show');
+    t.style.opacity = "0";
+    t.style.transform = "translateY(20px)";
   }, 2500);
 }
 
-// =============================
-// LOGIN (CPF + SENHA)
-// =============================
+/* =====================================================================
+      LOGIN
+===================================================================== */
 async function doLogin(event) {
   if (event) event.preventDefault();
 
-  const cpfInput = document.getElementById('cpfInput');
-  const senhaInput = document.getElementById('senhaInput');
+  const cpf = document.getElementById("cpfInput").value.trim();
+  const password = document.getElementById("senhaInput").value.trim();
 
-  const cpf = cpfInput.value.replace(/\D/g,'').trim();
-  const senha = senhaInput.value.trim();
-
-  if (!cpf || !senha) {
-    showLoginError("Preencha CPF e senha.");
+  if (!cpf || !password) {
+    showToast("Erro", "Preencha CPF e senha");
     return;
   }
 
   try {
-    // chamada Electron -> preload -> main
-    // login(cpf, password)
-    const res = await window.api.login(cpf, senha);
+    const res = await window.api.login(cpf, password);
 
     if (res.ok) {
-      currentToken = res.token;
-      currentUser  = res.user; // {id, name, role, cpf}
-
+      currentUser = res.user;
       preencherUIposLogin();
-
-      // limpar campos de login
-      cpfInput.value = '';
-      senhaInput.value = '';
-
-      showToast('Login efetuado', `Bem-vindo, ${currentUser.name}!`);
+      showToast("Bem-vindo", currentUser.name);
     } else {
-      showLoginError(res.message || 'CPF ou senha incorretos.');
-      senhaInput.value = '';
-      cpfInput.focus();
+      showToast("Erro", res.message || "CPF ou senha incorretos");
     }
-  } catch (err) {
-    console.error(err);
-    showLoginError('Erro ao conectar com o sistema.');
-  }
-}
 
-function showLoginError(msg) {
-  const box = document.getElementById('errorMsg');
-  box.textContent = msg;
-  box.classList.add('show');
-  setTimeout(() => {
-    box.classList.remove('show');
-  }, 3500);
-}
-
-// =============================
-// CADASTRO (apenas Admin pode confirmar)
-// =============================
-function abrirCadastro() {
-  // limpa mensagens
-  document.getElementById("cadSucesso").textContent = "";
-  document.getElementById("cadErro").textContent = "";
-  document.getElementById("cadPermissaoMsg").style.display = "none";
-
-  // limpa campos
-  document.getElementById("cadFuncao").value = "";
-  document.getElementById("cadNome").value = "";
-  document.getElementById("cadCPF").value = "";
-  document.getElementById("cadSenha").value = "";
-
-  document.getElementById("modalCadastro").style.display = "flex";
-
-  // se o usuário atual NÃO é admin, avisa
-  if (!currentUser || (currentUser.role || '').toLowerCase() !== 'admin') {
-    document.getElementById("cadPermissaoMsg").style.display = "block";
-  }
-}
-
-function fecharCadastro() {
-  document.getElementById("modalCadastro").style.display = "none";
-}
-
-async function confirmarCadastro() {
-  const funcao = document.getElementById("cadFuncao").value.trim();
-  const nome = document.getElementById("cadNome").value.trim();
-  const cpf = document.getElementById("cadCPF").value.replace(/\D/g,'').trim();
-  const senha = document.getElementById("cadSenha").value.trim();
-
-  const msgSucesso = document.getElementById("cadSucesso");
-  const msgErro = document.getElementById("cadErro");
-  const msgPerm = document.getElementById("cadPermissaoMsg");
-
-  msgSucesso.textContent = "";
-  msgErro.textContent = "";
-
-  // valida permissão
-  if (!currentUser || (currentUser.role || '').toLowerCase() !== 'admin') {
-    msgPerm.style.display = "block";
-    msgErro.textContent = "Você não tem permissão para cadastrar usuários.";
-    return;
-  }
-
-  // valida campos
-  if (!funcao || !nome || !cpf || !senha) {
-    msgErro.textContent = "Preencha todos os campos.";
-    return;
-  }
-
-  try {
-    // chamada Electron -> preload -> main
-    // createUser({nome, cpf, senha, role})
-    const resposta = await window.api.createUser({
-      nome,
-      cpf,
-      senha,
-      role: funcao
-    });
-
-    if (resposta.ok) {
-      msgSucesso.textContent = resposta.message || "Usuário cadastrado com sucesso!";
-      showToast('Cadastro', 'Novo usuário criado.');
-      setTimeout(() => {
-        fecharCadastro();
-      }, 1500);
-    } else {
-      msgErro.textContent = resposta.message || "Não foi possível cadastrar o usuário.";
-    }
   } catch (e) {
     console.error(e);
-    msgErro.textContent = "Erro ao comunicar com o sistema.";
+    showToast("Erro", "Falha de comunicação");
   }
 }
 
-// =============================
-// PÓS LOGIN: preencher e mostrar telas
-// =============================
+/* =====================================================================
+      APÓS LOGIN
+===================================================================== */
 function preencherUIposLogin() {
-  // preencher barra superior
-  document.getElementById('topUserName').childNodes[0].nodeValue = currentUser.name + ' ';
-  document.getElementById('topUserRole').textContent = currentUser.role;
 
-  // badge função
-  const badge = document.getElementById('roleBadge');
-  badge.textContent = currentUser.role ? currentUser.role.toUpperCase() : 'USER';
-  badge.className = 'role-badge role-' + (currentUser.role || 'user').toLowerCase();
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("mainApp").style.display = "flex";
+  document.getElementById("topbarArea").style.display = "flex";
 
-  // moldura de avatar por função
-  const avatarArea = document.getElementById('avatarArea');
-  avatarArea.setAttribute('data-role', (currentUser.role || 'user').toLowerCase());
+  document.getElementById("topUserNameText").textContent = currentUser.name;
+  document.getElementById("topUserRoleText").textContent = currentUser.role;
 
-  // carregar avatar salvo desse CPF
+  atualizarAvatar();
+  atualizarPerfilSidebar();
+}
+
+/* =====================================================================
+      AVATAR
+===================================================================== */
+function atualizarAvatar() {
+  const avatarPath = localStorage.getItem(AVATAR_KEY_PREFIX + currentUser.cpf);
+
+  if (avatarPath) {
+    document.getElementById("avatarImg").src = `file://${avatarPath}`;
+    document.getElementById("avatarImg").style.display = "block";
+    document.getElementById("avatarIcon").style.display = "none";
+  }
+}
+
+async function alterarAvatar() {
+  try {
+    const result = await window.api.chooseAvatar();
+
+    if (result.canceled) return;
+    pendingAvatarPath = result.filePaths[0];
+
+    document.getElementById("avatarPreview").src = `file://${pendingAvatarPath}`;
+    document.getElementById("avatarPreviewModal").style.display = "flex";
+
+  } catch (err) {
+    console.error(err);
+    showToast("Erro", "Falha ao escolher imagem");
+  }
+}
+
+document.getElementById("confirmAvatarBtn").addEventListener("click", () => {
+  if (!pendingAvatarPath) return;
+
+  localStorage.setItem(AVATAR_KEY_PREFIX + currentUser.cpf, pendingAvatarPath);
+
+  document.getElementById("avatarImg").src = `file://${pendingAvatarPath}`;
+  document.getElementById("avatarImg").style.display = "block";
+  document.getElementById("avatarIcon").style.display = "none";
+
+  document.getElementById("perfilAvatar").src = `file://${pendingAvatarPath}`;
+  document.getElementById("perfilAvatar").style.display = "block";
+  document.getElementById("perfilAvatarIcon").style.display = "none";
+
+  document.getElementById("avatarPreviewModal").style.display = "none";
+  showToast("Foto atualizada", "Avatar alterado com sucesso");
+});
+
+document.getElementById("cancelAvatarBtn").addEventListener("click", () => {
+  document.getElementById("avatarPreviewModal").style.display = "none";
+});
+
+/* =====================================================================
+      PERFIL LATERAL
+===================================================================== */
+function maskCPF(cpf) {
+  return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "***.$2.$3-$4");
+}
+
+function atualizarPerfilSidebar() {
+  document.getElementById("perfilNome").textContent = currentUser.name;
+  document.getElementById("perfilFuncao").textContent = currentUser.role;
+  document.getElementById("perfilCPF").textContent = maskCPF(currentUser.cpf);
+
   const avatarPath = localStorage.getItem(AVATAR_KEY_PREFIX + currentUser.cpf);
   if (avatarPath) {
-    document.getElementById('avatarImg').src = `file://${avatarPath}`;
-  } else {
-    document.getElementById('avatarImg').src = '';
+    document.getElementById("perfilAvatar").src = `file://${avatarPath}`;
+    document.getElementById("perfilAvatar").style.display = "block";
+    document.getElementById("perfilAvatarIcon").style.display = "none";
   }
-
-  // atualizar sidebar de perfil (para quando abrir)
-  atualizarPerfilSidebar();
-
-  // mostrar UI principal
-  document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('mainApp').classList.remove('hidden');
-  document.getElementById('topbarArea').classList.remove('hidden');
 }
 
-// =============================
-// LOGOUT
-// =============================
+document.getElementById("avatarArea").addEventListener("click", () => {
+  document.getElementById("perfilSidebar").style.right = "0";
+});
+
+function fecharPerfilSidebar() {
+  document.getElementById("perfilSidebar").style.right = "-350px";
+}
+
+/* =====================================================================
+      NAVEGAÇÃO ENTRE PÁGINAS
+===================================================================== */
+function abrirPagina(id) {
+  document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+  document.getElementById(id).style.display = "block";
+
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("selected"));
+  document.querySelector(`[data-page="${id}"]`).classList.add("selected");
+}
+
+/* =====================================================================
+      LOGOUT
+===================================================================== */
+document.getElementById("logoutBtn").addEventListener("click", pedirLogout);
+
 function pedirLogout() {
-  // abre modal de confirmação
-  document.getElementById('logoutModal').style.display = 'flex';
+  document.getElementById("logoutModal").style.display = "flex";
 }
 
 function fecharLogoutModal() {
-  document.getElementById('logoutModal').style.display = 'none';
+  document.getElementById("logoutModal").style.display = "none";
 }
 
 function logoutConfirmado() {
-  fecharLogoutModal();
-  logout();
-  showToast('Sessão encerrada', 'Você saiu do sistema.');
-}
 
-function logout() {
-  currentToken = null;
   currentUser = null;
 
-  // esconder painel principal
-  document.getElementById('mainApp').classList.add('hidden');
-  document.getElementById('loginScreen').classList.remove('hidden');
-  document.getElementById('topbarArea').classList.add('hidden');
+  document.getElementById("logoutModal").style.display = "none";
+  document.getElementById("mainApp").style.display = "none";
+  document.getElementById("topbarArea").style.display = "none";
 
-  // esconder painel lateral se estiver aberto
-  fecharPerfilSidebar();
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("cpfInput").value = "";
+  document.getElementById("senhaInput").value = "";
 
-  // limpar campos de login
-  document.getElementById('cpfInput').value = '';
-  document.getElementById('senhaInput').value = '';
-
-  // limpar avatar na topbar
-  document.getElementById('avatarImg').src = '';
+  showToast("Sessão encerrada", "Você saiu do sistema");
 }
 
-// =============================
-// RECUPERAÇÃO / ALTERAÇÃO DE SENHA
-// =============================
+/* =====================================================================
+      MODAL — RECUPERAR SENHA
+===================================================================== */
 function abrirRecuperacao() {
   document.getElementById("modalRecuperar").style.display = "flex";
-  document.getElementById("msgSucesso").textContent = "";
-  document.getElementById("msgErro").textContent = "";
 }
 
 function fecharRecuperacao() {
@@ -1514,260 +847,112 @@ function fecharRecuperacao() {
 }
 
 async function confirmarRecuperacao() {
-  const funcao = document.getElementById("funcaoRecuperar").value.trim();
-  const idUser = document.getElementById("idRecuperar").value.trim();
-  const cpfRec = document.getElementById("cpfRecuperar").value.replace(/\D/g,'').trim();
-  const novaSenha = document.getElementById("novaSenha").value.trim();
-  const confirmar = document.getElementById("confirmarSenha").value.trim();
+  const funcao = document.getElementById("funcaoRecuperar").value;
+  const idUser = document.getElementById("idRecuperar").value;
+  const cpf = document.getElementById("cpfRecuperar").value;
+  const nova = document.getElementById("novaSenha").value;
+  const conf = document.getElementById("confirmarSenha").value;
 
-  const msgErro = document.getElementById("msgErro");
-  const msgSucesso = document.getElementById("msgSucesso");
-
-  msgErro.textContent = "";
-  msgSucesso.textContent = "";
-
-  if (!funcao || !idUser || !cpfRec || !novaSenha || !confirmar) {
-    msgErro.textContent = "Preencha todos os campos.";
+  if (!funcao || !idUser || !cpf || !nova || !conf) {
+    showToast("Erro", "Preencha todos os campos");
     return;
   }
 
-  if (novaSenha !== confirmar) {
-    msgErro.textContent = "As senhas não coincidem.";
+  if (nova !== conf) {
+    showToast("Erro", "Senhas diferentes");
     return;
   }
 
   try {
-    // Electron IPC
-    const resposta = await window.api.changePassword(cpfRec, idUser, novaSenha);
-    if (resposta.ok) {
-      msgSucesso.textContent = resposta.message || "Senha redefinida com sucesso!";
-      showToast('Senha alterada', 'Sua senha foi atualizada.');
-      setTimeout(() => {
-        fecharRecuperacao();
-      }, 1500);
+    const r = await window.api.changePassword(cpf, idUser, nova);
+
+    if (r.ok) {
+      showToast("Sucesso", "Senha alterada");
+      fecharRecuperacao();
     } else {
-      msgErro.textContent = resposta.message || "Não foi possível alterar a senha.";
+      showToast("Erro", r.message);
     }
-  } catch (e) {
-    console.error(e);
-    msgErro.textContent = "Erro ao comunicar com o sistema.";
+
+  } catch {
+    showToast("Erro", "Falha no servidor");
   }
 }
 
-// =============================
-// NAVEGAÇÃO ENTRE PÁGINAS (com fade)
-// =============================
-function abrirPagina(pagina) {
-  const pages = document.querySelectorAll(".page");
-  pages.forEach(p => {
-    if (p.id === pagina) {
-      p.classList.add("active");
-    } else {
-      p.classList.remove("active");
-    }
-  });
-  showToast('Navegação', `Página: ${pagina}`);
+/* =====================================================================
+      MODAL — CADASTRAR USUÁRIO
+===================================================================== */
+function abrirCadastro() {
+  document.getElementById("modalCadastro").style.display = "flex";
 }
 
-// =============================
-// PERFIL LATERAL (PAINEL)
-// =============================
-function maskCPF(cpf) {
-  return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "***.$2.$3-$4");
+function fecharCadastro() {
+  document.getElementById("modalCadastro").style.display = "none";
 }
 
-function atualizarPerfilSidebar() {
-  if (!currentUser) return;
-  document.getElementById("perfilNome").textContent = currentUser.name;
-  document.getElementById("perfilFuncao").textContent = currentUser.role;
-  document.getElementById("perfilCPF").textContent = maskCPF(currentUser.cpf);
+async function confirmarCadastro() {
+  const funcao = document.getElementById("cadFuncao").value;
+  const nome = document.getElementById("cadNome").value;
+  const cpf = document.getElementById("cadCPF").value;
+  const senha = document.getElementById("cadSenha").value;
 
-  // avatar principal
-  const avatarPath = localStorage.getItem(AVATAR_KEY_PREFIX + currentUser.cpf);
-  if (avatarPath) {
-    document.getElementById("perfilAvatar").src = `file://${avatarPath}`;
-  } else {
-    document.getElementById("perfilAvatar").src = "";
-  }
-}
-
-function abrirPerfilSidebar() {
-  if (!currentUser) return;
-  atualizarPerfilSidebar();
-  document.getElementById("perfilSidebar").classList.add("show");
-}
-
-function fecharPerfilSidebar() {
-  document.getElementById("perfilSidebar").classList.remove("show");
-}
-
-// =============================
-// ALTERAR AVATAR (com pré-visualização e confirmação)
-// =============================
-async function alterarAvatar() {
-  if (!currentUser) return;
-
-  try {
-    const res = await window.api.chooseAvatar();
-    if (!res || res.canceled || !res.path) {
-      return;
-    }
-
-    // salva caminho temporário
-    pendingAvatarPath = res.path;
-
-    // mostra preview no modal
-    const previewImg = document.getElementById('avatarPreview');
-    previewImg.src = `file://${pendingAvatarPath}`;
-
-    document.getElementById('avatarMsgSucesso').textContent = "";
-    document.getElementById('avatarMsgErro').textContent = "";
-
-    document.getElementById('avatarPreviewModal').style.display = 'flex';
-  } catch (err) {
-    console.error(err);
-    showToast('Erro', 'Não foi possível selecionar a imagem.');
-  }
-}
-
-function fecharAvatarPreviewModal() {
-  document.getElementById('avatarPreviewModal').style.display = 'none';
-  pendingAvatarPath = null;
-}
-
-function confirmarAvatarEscolhido() {
-  if (!currentUser || !pendingAvatarPath) {
-    document.getElementById('avatarMsgErro').textContent = "Nenhuma imagem selecionada.";
+  if (!funcao || !nome || !cpf || !senha) {
+    showToast("Erro", "Preencha todos os campos");
     return;
   }
 
-  // persistir no localStorage por CPF
-  localStorage.setItem(AVATAR_KEY_PREFIX + currentUser.cpf, pendingAvatarPath);
+  if ((currentUser.role || "").toLowerCase() !== "admin") {
+    showToast("Erro", "Apenas administradores podem cadastrar");
+    return;
+  }
 
-  // atualizar avatar na topbar
-  document.getElementById('avatarImg').src = `file://${pendingAvatarPath}`;
+  try {
+    const r = await window.api.createUser({
+      nome,
+      cpf,
+      senha,
+      role: funcao
+    });
 
-  // atualizar avatar painel lateral
-  document.getElementById('perfilAvatar').src = `file://${pendingAvatarPath}`;
-
-  showToast('Avatar atualizado', 'Sua foto de perfil foi alterada.');
-
-  fecharAvatarPreviewModal();
-}
-
-// =============================
-// BUSCA NO MENU LATERAL
-// =============================
-function filtrarMenu(term) {
-  const itens = document.querySelectorAll('#sideMenu a');
-  const termo = term.toLowerCase().trim();
-
-  itens.forEach(a => {
-    const texto = a.textContent.toLowerCase();
-    if (!termo || texto.includes(termo)) {
-      a.classList.remove('hidden-by-search');
+    if (r.ok) {
+      showToast("Sucesso", "Usuário cadastrado");
+      fecharCadastro();
     } else {
-      a.classList.add('hidden-by-search');
+      showToast("Erro", r.message);
     }
-  });
-}
 
-// =============================
-// CHANGELOG POPOVER
-// =============================
-function toggleChangelog() {
-  const pop = document.getElementById('changelogPop');
-  const isVisible = pop.style.display === 'block';
-  pop.style.display = isVisible ? 'none' : 'block';
-}
-
-function closeChangelogIfClickOutside(e) {
-  const pop = document.getElementById('changelogPop');
-  const toggle = document.getElementById('changelogToggle');
-  if (!pop.contains(e.target) && !toggle.contains(e.target)) {
-    pop.style.display = 'none';
+  } catch {
+    showToast("Erro", "Falha no servidor");
   }
 }
 
-// =============================
-// INICIALIZAÇÃO 
-// =============================
-window.addEventListener('DOMContentLoaded', () => {
-  // aplica tema salvo
-  const savedTheme = localStorage.getItem('app_theme_v1') || 'dark';
-applyTheme(savedTheme);
+/* =====================================================================
+      INICIALIZAÇÃO
+===================================================================== */
+window.addEventListener("DOMContentLoaded", () => {
 
-const themeLogin = document.getElementById('themeToggleLogin');
-if (themeLogin) themeLogin.addEventListener('click', toggleTheme);
+  /* TEMA */
+  const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
+  applyTheme(savedTheme);
 
-const themeTop = document.getElementById('themeToggle');
-if (themeTop) themeTop.addEventListener('click', toggleTheme);
-
-  // aplica escala de fonte salva
-  const savedScale = parseFloat(localStorage.getItem(FONT_SCALE_KEY) || '1');
+  /* FONTE */
+  const savedScale = parseFloat(localStorage.getItem(FONT_SCALE_KEY) || "1");
   applyFontScale(savedScale);
 
-  // listeners topbar
-  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-  document.getElementById('logoutBtn').addEventListener('click', pedirLogout);
-  document.getElementById('avatarArea').addEventListener('click', abrirPerfilSidebar);
+  /* BOTÕES */
+  document.getElementById("themeToggle").addEventListener("click", toggleTheme);
+  document.getElementById("fontPlusBtn").addEventListener("click", increaseFont);
+  document.getElementById("fontMinusBtn").addEventListener("click", decreaseFont);
 
-  // acessibilidade botões
-  document.getElementById('fontPlusBtn').addEventListener('click', increaseFont);
-  document.getElementById('fontMinusBtn').addEventListener('click', decreaseFont);
+  /* FECHAR MODAIS AO CLICAR FORA */
+  ["modalRecuperar","modalCadastro","avatarPreviewModal","logoutModal"]
+    .forEach(id => {
+      document.getElementById(id).addEventListener("click", e => {
+        if (e.target.id === id) e.target.style.display = "none";
+      });
+    });
 
-  // listeners logout modal
-  document.getElementById('logoutModal').addEventListener('click', (e) => {
-    if (e.target.id === 'logoutModal') fecharLogoutModal();
-  });
-
-  // listeners avatar preview modal
-  document.getElementById('avatarPreviewModal').addEventListener('click', (e) => {
-    if (e.target.id === 'avatarPreviewModal') fecharAvatarPreviewModal();
-  });
-  document.getElementById('confirmAvatarBtn').addEventListener('click', confirmarAvatarEscolhido);
-  document.getElementById('cancelAvatarBtn').addEventListener('click', fecharAvatarPreviewModal);
-
-  // modal cadastro click fora
-  document.getElementById('modalCadastro').addEventListener('click', (e) => {
-    if (e.target.id === 'modalCadastro') fecharCadastro();
-  });
-
-  // modal recuperar click fora
-  document.getElementById('modalRecuperar').addEventListener('click', (e) => {
-    if (e.target.id === 'modalRecuperar') fecharRecuperacao();
-  });
-
-  // login Enter
-  document.getElementById('cpfInput').addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') doLogin(e);
-  });
-  document.getElementById('senhaInput').addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') doLogin(e);
-  });
-
-  // busca do menu (topbar e sidebar sincronizadas)
-  const menuSearchTop = document.getElementById('menuSearchInput');
-  const menuSearchSide = document.getElementById('menuSearchInputSide');
-
-  function syncFilter(value) {
-    menuSearchTop.value = value;
-    menuSearchSide.value = value;
-    filtrarMenu(value);
-  }
-
-  menuSearchTop.addEventListener('input', (e) => {
-    syncFilter(e.target.value);
-  });
-
-  menuSearchSide.addEventListener('input', (e) => {
-    syncFilter(e.target.value);
-  });
-
-  // changelog popover
-  document.getElementById('changelogToggle').addEventListener('click', toggleChangelog);
-  document.addEventListener('click', closeChangelogIfClickOutside);
 });
+
 </script>
 </body>
 </html>

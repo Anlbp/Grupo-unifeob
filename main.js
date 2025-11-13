@@ -2,7 +2,7 @@
 // main.js — Configuração principal do Electron
 // ========================================================
 
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const axios = require('axios');
 
@@ -87,3 +87,19 @@ ipcMain.handle('auth:getAdmin', async (event, { token }) => {
     return { ok: false, message: 'Falha ao buscar dados do admin.' };
   }
 });
+// ========================================================
+// ESCOLHER IMAGEM DO AVATAR (abrir diálogo do Windows)
+// ========================================================
+ipcMain.handle('choose-avatar', async () => {
+  const { dialog } = require('electron');
+
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [
+      { name: 'Imagens', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp'] }
+    ]
+  });
+
+  return result; // { canceled, filePaths }
+});
+
