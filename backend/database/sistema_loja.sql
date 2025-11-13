@@ -34,7 +34,11 @@ CREATE TABLE IF NOT EXISTS produtos (
 -- Dados de exemplo
 INSERT INTO produtos (nome, tipo, valor) VALUES
 ('Porta de Madeira', 'Porta', 250.00),
-('Janela de Alumínio', 'Janela', 180.00);
+('Janela de Alumínio', 'Janela', 180.00),
+('Porta de Vidro Temperado', 'Porta', 320.00),
+('Janela de Madeira', 'Janela', 210.00),
+('Porta de Aço Reforçada', 'Porta', 450.00),
+('Janela Basculante', 'Janela', 160.00);
 
 -- ======================================================
 -- TABELA: compras
@@ -57,6 +61,18 @@ VALUES (1, 1, 150.75, '2023-10-27', '2023-11-01', 'Cartão de Crédito');
 
 INSERT INTO compras (cliente_id, produto_id, valor, data_compra, forma_pagamento)
 VALUES (2, 2, 45.00, '2023-10-27', 'Dinheiro');
+
+INSERT INTO compras (cliente_id, produto_id, valor, data_compra, data_entrega, forma_pagamento)
+VALUES (1, 3, 320.00, '2023-11-10', '2023-11-15', 'Pix');
+
+INSERT INTO compras (cliente_id, produto_id, valor, data_compra, data_entrega, forma_pagamento)
+VALUES (2, 4, 210.00, '2023-11-12', '2023-11-18', 'Cartão de Débito');
+
+INSERT INTO compras (cliente_id, produto_id, valor, data_compra, data_entrega, forma_pagamento)
+VALUES (1, 5, 450.00, '2023-11-14', '2023-11-20', 'Boleto Bancário');
+
+INSERT INTO compras (cliente_id, produto_id, valor, data_compra, forma_pagamento)
+VALUES (2, 6, 160.00, '2023-11-16', 'Dinheiro');
 
 -- ======================================================
 -- TABELA: usuarios
