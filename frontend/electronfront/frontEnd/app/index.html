@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema - Casa das Portas e Janelas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- GOOGLE FONTS + MATERIAL ICONS -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+
+/* ============================================================
+     MATERIAL DESIGN 3 — TOKENS
+============================================================ */
+:root {
+  --md-primary: #1A73E8;
+  --md-on-primary: #ffffff;
+
+  --md-surface: #ffffff;
+  --md-surface-variant: #f1f3f4;
+  --md-on-surface: #202124;
+  --md-on-surface-variant: #5f6368;
+  --md-outline: rgba(0,0,0,0.16);
+
+  --avatar-bg: #8AB4F8;
+
+  --font-scale: 1;
+}
+
+/* ===================== DARK MODE ====================== */
+.light {
+  --md-surface: #121212;
+  --md-surface-variant: #1e1e1e;
+  --md-on-surface: #E8EAED;
+  --md-on-surface-variant: #B0B3B8;
+  --md-outline: rgba(255,255,255,0.12);
+  --avatar-bg: #3c4043;
+}
+
+/* ============================================================
+    GLOBAL
+============================================================ */
+
+body {
+  margin: 0;
+  background: var(--md-surface);
+  font-family: "Roboto", sans-serif;
+  color: var(--md-on-surface);
+  transition: 0.3s;
+  font-size: calc(16px * var(--font-scale));
+}
+
+* {
+  color: var(--md-on-surface);
+  box-sizing: border-box;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb {
+  background: var(--md-outline);
+  border-radius: 10px;
+}
+
+/* ============================================================
+    ESTILO UNIVERSAL — INPUTS MATERIAL YOU
+============================================================ */
+
+.mdui-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 18px; /* 🔥 Material YOU */
+  border: 1px solid var(--md-outline);
+  background: var(--md-surface-variant);
+  color: var(--md-on-surface);
+  font-size: calc(16px * var(--font-scale));
+  outline: none;
+  transition: 0.25s;
+}
+
+.mdui-input::placeholder {
+  color: var(--md-on-surface-variant);
+}
+
+.mdui-input:focus {
+  border: 1px solid var(--md-primary);
+  background: var(--md-surface-variant);
+}
+
+/* SELECT estilo Material You */
+.mdui-select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--md-outline);
+  background: var(--md-surface-variant) !important;
+  color: var(--md-on-surface) !important;
+  font-size: calc(16px * var(--font-scale));
+  outline: none;
+}
+
+/* ============================================================
+    MODAIS MATERIAL YOU — ALINHADOS E PADRONIZADOS
+============================================================ */
+
+.modal-card {
+  background: var(--md-surface);
+  padding: 32px;
+  border-radius: 26px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+  border: 1px solid var(--md-outline);
+  display: flex;
+  flex-direction: column;
+  gap: 14px; /* 🔥 espaçamento uniforme */
+  margin: auto;
+}
+
+.modal-card h2 {
+  text-align: center;
+  font-size: calc(24px * var(--font-scale));
+  color: var(--md-primary);
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
+/* BOTÕES */
+.md-btn-filled {
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  border: none;
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-size: calc(17px * var(--font-scale));
+  cursor: pointer;
+  margin-top: 12px;
+  transition: 0.2s;
+}
+
+.md-btn-text {
+  text-align: center;
+  background: none;
+  border: none;
+  font-size: calc(15px * var(--font-scale));
+  color: var(--md-primary);
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+/* ============================================================
+    LOGIN SCREEN
+============================================================ */
+
+#loginScreen {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.md-login-card {
+  background: var(--md-surface);
+  padding: 40px;
+  border-radius: 28px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  border: 1px solid var(--md-outline);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.md-login-card h1 {
+  margin-bottom: 8px;
+  font-size: calc(28px * var(--font-scale));
+  color: var(--md-primary);
+  text-align: center;
+}
+
+/* ============================================================
+     TOPBAR / SIDEBAR (SEM ALTERAÇÕES)
+============================================================ */
+
+.md-topbar {
+  height: 64px;
+  background: var(--md-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--md-outline);
+}
+
+.md-topbar * {
+  color: var(--md-on-surface) !important;
+}
+
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.top-right .material-icons {
+  font-size: calc(24px * var(--font-scale));
+  cursor: pointer;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--avatar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.md-layout {
+  display: flex;
+  height: calc(100vh - 64px);
+}
+
+.md-nav-rail {
+  width: 80px;
+  background: var(--md-surface);
+  border-right: 1px solid var(--md-outline);
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.md-nav-rail button {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 20px 0;
+  cursor: pointer;
+  color: var(--md-on-surface-variant);
+}
+
+.md-nav-rail button.selected {
+  color: var(--md-primary);
+  border-left: 4px solid var(--md-primary);
+  background: var(--md-surface-variant);
+}
+
+.md-main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.page h1 {
+  font-size: calc(28px * var(--font-scale));
+  margin-bottom: 12px;
+  color: var(--md-primary);
+}
+
+.md-card {
+  background: var(--md-surface);
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--md-outline);
+  margin-bottom: 20px;
+  font-size: calc(16px * var(--font-scale));
+}
+/* TABELAS ESTILO MATERIAL YOU */
+table.md-card {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--md-surface);
+  border: 1px solid var(--md-outline);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+table.md-card thead {
+  background: var(--md-surface-variant);
+}
+
+table.md-card th {
+  text-align: left;
+  padding: 14px 16px;
+  font-weight: 500;
+  color: var(--md-on-surface-variant);
+  font-size: calc(15px * var(--font-scale));
+  border-bottom: 1px solid var(--md-outline);
+}
+
+table.md-card td {
+  padding: 12px 16px;
+  font-size: calc(15px * var(--font-scale));
+  color: var(--md-on-surface);
+  border-bottom: 1px solid var(--md-outline);
+}
+
+table.md-card tbody tr:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+table.md-card tbody tr:nth-child(even) {
+  background: var(--md-surface-variant);
+}
+
+
+/* ====================== ESTILOS ADICIONAIS (apenas adicionados) ====================== */
+
+/* Barra de ações CRUD visível */
+.crud-bar {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin: 12px 0;
+}
+
+/* Botões CRUD */
+.btn-crud {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--md-outline);
+  background: var(--md-surface-variant);
+  color: var(--md-on-surface);
+  cursor: pointer;
+}
+.btn-crud .material-icons { font-size: 18px; }
+.btn-add { border-color: #1e8e3e; }     /* adicionar */
+.btn-edit { border-color: #fbbc04; }    /* editar */
+.btn-remove { border-color: #d93025; }  /* remover */
+
+/* Elementos exclusivos de administrador (visibilidade controlada via JS após login) */
+.admin-only { display: none; }
+
+/* Cards de métricas adicionais no dashboard */
+.cards { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 12px; }
+.card { background: var(--md-surface); border: 1px solid var(--md-outline); border-radius: 16px; padding: 16px; }
+
+/* Gráficos (mantendo os existentes e permitindo adicionar o de lucro) */
+.graficos { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+</style>
+</head>
+<body>
+
+<!-- ======================================================
+      T O P B A R
+====================================================== -->
+<div class="md-topbar" id="topbarArea" style="display:none;">
+
+  <div class="top-left" style="font-size:calc(20px * var(--font-scale));">
+    Casa das Portas e Janelas
+  </div>
+
+  <div class="top-right">
+
+    <!-- NOME + FUNÇÃO -->
+    <div id="topUserNameBox" style="text-align:right;margin-right:12px;">
+      <div id="topUserNameText" style="font-size:calc(15px * var(--font-scale));font-weight:bold;"></div>
+      <div id="topUserRoleText" style="font-size:calc(13px * var(--font-scale));"></div>
+    </div>
+
+    <!-- AVATAR -->
+    <div class="avatar" id="avatarArea">
+      <span class="material-icons" id="avatarIcon" style="color:white;">person</span>
+      <img id="avatarImg" src="" style="display:none;">
+    </div>
+
+    <!-- FONT + -->
+    <span class="material-icons" id="fontPlusBtn"
+      style="cursor:pointer;font-size:calc(24px * var(--font-scale));margin-left:15px;">
+      zoom_in
+    </span>
+
+    <!-- FONT - -->
+    <span class="material-icons" id="fontMinusBtn"
+      style="cursor:pointer;font-size:calc(24px * var(--font-scale));margin-left:10px;">
+      zoom_out
+    </span>
+
+    <!-- THEME -->
+    <span class="material-icons" id="themeToggle"
+      style="cursor:pointer;font-size:calc(24px * var(--font-scale));margin-left:10px;">
+      dark_mode
+    </span>
+
+    <!-- LOGOUT -->
+    <span class="material-icons" id="logoutBtn"
+      style="cursor:pointer;font-size:calc(24px * var(--font-scale));margin-left:10px;">
+      logout
+    </span>
+
+  </div>
+</div>
+
+<!-- ======================================================
+      L O G I N
+====================================================== -->
+
+<div id="loginScreen" style="display:flex;">
+
+  <div class="md-login-card">
+
+    <h1>Login</h1>
+
+    <input id="cpfInput" class="mdui-input" placeholder="CPF">
+    <input id="senhaInput" type="password" class="mdui-input" placeholder="Senha">
+
+    <button class="md-btn-filled" onclick="doLogin()">Entrar</button>
+
+    <button class="md-btn-text" onclick="abrirRecuperacao()">
+      Esqueci minha senha
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ======================================================
+      L A Y O U T   PRINCIPAL
+====================================================== -->
+
+<div class="md-layout" id="mainApp" style="display:none;">
+
+  <!-- NAVIGATION RAIL -->
+  <aside class="md-nav-rail">
+
+    <button onclick="abrirPagina('dashboard')" data-page="dashboard" class="nav-item selected">
+      <span class="material-icons">dashboard</span>
+    </button>
+
+    <button onclick="abrirPagina('clientes')" data-page="clientes" class="nav-item">
+      <span class="material-icons">people</span>
+    </button>
+
+    <button onclick="abrirPagina('produtos')" data-page="produtos" class="nav-item">
+      <span class="material-icons">inventory_2</span>
+    </button>
+
+   <button onclick="abrirPagina('vendas')" data-page="vendas" class="nav-item">
+      <span class="material-icons">shopping_cart</span>
+   </button>
+
+
+    <button onclick="abrirCadastro()" data-page="adminCadastro" class="nav-item">
+      <span class="material-icons">person_add</span>
+    </button>
+
+    <!-- ADIÇÃO: Botão Auditoria (apenas adicionando, sem remover nada) -->
+    <button onclick="abrirPagina('auditoria')" data-page="auditoria" class="nav-item admin-only">
+      <span class="material-icons">manage_search</span>
+    </button>
+
+  </aside>
+
+  <!-- ======================================================
+        P Á G I N A S
+  ====================================================== -->
+  <main class="md-main">
+
+<main class="md-main">
+
+  <!-- DASHBOARD -->
+  <div class="page" id="dashboard" style="display:block;">
+    <h1>Dashboard</h1>
+    <div class="md-card">Bem-vindo ao painel geral.</div>
+
+    <!-- ADIÇÃO: Cards de métricas com lucro (sem remover nada existente) -->
+    <div class="cards">
+      <div class="card">
+        <h3>Total de Clientes</h3>
+        <p id="total-clientes">0</p>
+      </div>
+      <div class="card">
+        <h3>Total de Vendas</h3>
+        <p id="total-vendas">0</p>
+      </div>
+      <div class="card">
+        <h3>Faturamento</h3>
+        <p id="faturamento">R$ 0,00</p>
+      </div>
+      <div class="card">
+        <h3>Lucro</h3>
+        <p id="lucro">R$ 0,00</p>
+      </div>
+    </div>
+
+    <!-- ADIÇÃO: Gráfico de lucro (mantendo os já existentes abaixo) -->
+    <div class="graficos">
+      <canvas id="grafico-lucro"></canvas>
+    </div>
+  </div>
+
+  <!-- CLIENTES -->
+  <div class="page" id="clientes" style="display:none;">
+    <h1>Clientes</h1>
+
+    <!-- ADIÇÃO: Barra de ações CRUD sempre visível -->
+    <div class="crud-bar">
+      <button class="btn-crud btn-add " onclick="onAdicionarClienteClick()">
+        <span class="material-icons">add</span> Adicionar
+      </button>
+      <button class="btn-crud btn-edit" onclick="onEditarClienteClick()">
+        <span class="material-icons">edit</span> Editar
+      </button>
+      <button class="btn-crud btn-remove " onclick="onRemoverClienteClick()">
+        <span class="material-icons">delete</span> Remover
+      </button>
+    </div>
+
+    <table class="md-card" style="width:100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>CPF/CNPJ</th>
+          <th>Email</th>
+          <th>Telefone</th>
+          <th>Cidade</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="clientes-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- PRODUTOS -->
+  <div class="page" id="produtos" style="display:none;">
+    <h1>Produtos</h1>
+
+    <!-- ADIÇÃO: Barra de ações CRUD sempre visível -->
+    <div class="crud-bar">
+      <button class="btn-crud btn-add " onclick="onAdicionarProdutoClick()">
+        <span class="material-icons">add</span> Adicionar
+      </button>
+      <button class="btn-crud btn-edit" onclick="onEditarProdutoClick()">
+        <span class="material-icons">edit</span> Editar
+      </button>
+      <button class="btn-crud btn-remove " onclick="onRemoverProdutoClick()">
+        <span class="material-icons">delete</span> Remover
+      </button>
+    </div>
+
+    <table class="md-card" style="width:100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Preço</th>
+          <th>Descrição</th>
+          <th>Estoque</th>
+        </tr>
+      </thead>
+      <tbody id="produtos-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- VENDAS -->
+<div class="page" id="vendas" style="display:none;">
+  <h1>Vendas</h1>
+
+  <!-- ADIÇÃO: Barra de ações CRUD sempre visível -->
+  <div class="crud-bar">
+    <button class="btn-crud btn-add" onclick="onAdicionarVendaClick()">
+      <span class="material-icons">add</span> Adicionar
+    </button>
+    <button class="btn-crud btn-edit" onclick="onEditarVendaClick()">
+      <span class="material-icons">edit</span> Editar
+    </button>
+    <button class="btn-crud btn-remove " onclick="onRemoverVendaClick()">
+      <span class="material-icons">delete</span> Remover
+    </button>
+  </div>
+
+  <table class="md-card" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Vendedor</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Forma Pagamento</th>
+        <th>Data Compra</th>
+        <th>Data Entrega</th>
+      </tr>
+    </thead>
+    <tbody id="vendas-tbody"></tbody>
+  </table>
+</div>
+
+  <!-- CADASTRO ADMIN -->
+  <div class="page" id="adminCadastro" style="display:none;">
+    <h1>Cadastrar Usuário</h1>
+    <div class="md-card">
+      Área para adicionar novos usuários ao sistema.
+    </div>
+  </div>
+
+ <!-- Mantendo bloco dashboard já existente -->
+ <div class="dashboard">
+  <div class="cards">
+    <div class="card">
+      <h3>Total de Clientes</h3>
+      <p id="total-clientes">0</p>
+    </div>
+    <div class="card">
+      <h3>Total de Vendas</h3>
+      <p id="total-vendas">0</p>
+    </div>
+    <div class="card">
+      <h3>Faturamento</h3>
+      <p id="faturamento">R$ 0,00</p>
+    </div>
+  </div>
+
+  <div class="graficos">
+    <canvas id="grafico-vendas"></canvas>
+    <canvas id="grafico-pagamentos"></canvas>
+  </div>
+</div>
+
+<!-- ADIÇÃO: Página de Auditoria exclusiva para Admin (apenas adicionada) -->
+<div class="page admin-only" id="auditoria" style="display:none;">
+  <h1>Auditoria</h1>
+  <table class="md-card" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>Data/Hora</th>
+        <th>Usuário</th>
+        <th>Função</th>
+        <th>Ação</th>
+        <th>Entidade</th>
+        <th>ID Entidade</th>
+        <th>Detalhes</th>
+      </tr>
+    </thead>
+    <tbody id="auditoria-tbody"></tbody>
+  </table>
+</div>
+
+</main>
+</div>
+<!-- ======================================================
+      S I D E B A R   D E   P E R F I L
+====================================================== -->
+
+<div id="perfilSidebar" style="
+  position:fixed;
+  top:0;
+  right:-350px;
+  width:320px;
+  height:100%;
+  background:var(--md-surface);
+  border-left:1px solid var(--md-outline);
+  box-shadow:-4px 0 16px rgba(0,0,0,0.3);
+  padding:20px;
+  transition:0.3s;
+  z-index:3000;
+">
+
+  <h2 style="color:var(--md-primary);font-size:calc(22px * var(--font-scale));">Perfil</h2>
+
+  <div style="display:flex;justify-content:center;margin:20px 0;">
+    <div class="avatar" style="width:90px;height:90px;background:var(--avatar-bg);">
+      <span id="perfilAvatarIcon" class="material-icons" style="color:white;font-size:50px;">person</span>
+      <img id="perfilAvatar" src="" style="display:none;width:100%;height:100%;border-radius:50%;">
+    </div>
+  </div>
+
+  <p><b>Nome:</b> <span id="perfilNome"></span></p>
+  <p><b>Função:</b> <span id="perfilFuncao"></span></p>
+  <p><b>CPF:</b> <span id="perfilCPF"></span></p>
+
+  <button onclick="alterarAvatar()" class="md-btn-filled" style="margin-top:20px;">Alterar Foto</button>
+  <button onclick="pedirLogout()" class="md-btn-filled" style="margin-top:12px;background:#d93025;">Sair</button>
+  <button onclick="fecharPerfilSidebar()" class="md-btn-text" style="margin-top:10px;">Fechar</button>
+
+</div>
+<!-- ======================================================
+      M O D A I S  (RECUPERAÇÃO, CADASTRO, AVATAR, LOGOUT)
+====================================================== -->
+
+<!-- MODAL RECUPERAÇÃO SENHA -->
+<div id="modalRecuperar" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center; align-items:center;
+  z-index:4000;
+">
+  <div class="modal-card">
+
+    <h2>Recuperar Senha</h2>
+
+    <select id="funcaoRecuperar" class="mdui-select">
+      <option value="">Selecione sua função</option>
+      <option value="admin">Administrador</option>
+      <option value="user">Usuário</option>
+      <option value="tecnico">Técnico</option>
+      <option value="gerente">Gerente</option>
+    </select>
+
+    <input id="idRecuperar" class="mdui-input" placeholder="ID do usuário">
+    <input id="cpfRecuperar" class="mdui-input" placeholder="CPF">
+    <input id="novaSenha" type="password" class="mdui-input" placeholder="Nova senha">
+    <input id="confirmarSenha" type="password" class="mdui-input" placeholder="Confirmar senha">
+
+    <button onclick="confirmarRecuperacao()" class="md-btn-filled">Alterar Senha</button>
+    <button onclick="fecharRecuperacao()" class="md-btn-text">Cancelar</button>
+
+  </div>
+</div>
+
+
+<!-- MODAL CADASTRO -->
+<div id="modalCadastro" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center; align-items:center;
+  z-index:4000;
+">
+  <div class="modal-card">
+
+    <h2>Cadastrar Usuário</h2>
+
+    <select id="cadFuncao" class="mdui-select">
+      <option value="">Função</option>
+      <option value="admin">Administrador</option>
+      <option value="gerente">Gerente</option>
+      <option value="vendedor">Vendedor</option>
+    </select>
+
+    <input id="cadNome" class="mdui-input" placeholder="Nome">
+    <input id="cadCPF" class="mdui-input" placeholder="CPF">
+    <input id="cadSenha" type="password" class="mdui-input" placeholder="Senha">
+
+    <button onclick="confirmarCadastro()" class="md-btn-filled">Cadastrar</button>
+    <button onclick="fecharCadastro()" class="md-btn-text">Cancelar</button>
+
+  </div>
+</div>
+
+
+<!-- MODAL AVATAR PREVIEW -->
+<div id="avatarPreviewModal" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center; align-items:center;
+  z-index:4000;
+">
+  <div class="modal-card" style="text-align:center;">
+
+    <h2>Confirmar Foto</h2>
+
+    <img id="avatarPreview" src="" style="
+      max-width:200px; max-height:200px;
+      margin:15px auto;
+      border-radius:16px;
+      border:2px solid var(--md-primary);
+    ">
+
+    <button id="confirmAvatarBtn" class="md-btn-filled">Usar Foto</button>
+    <button id="cancelAvatarBtn" class="md-btn-text">Cancelar</button>
+
+  </div>
+</div>
+
+
+<!-- MODAL LOGOUT -->
+<div id="logoutModal" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center; align-items:center;
+  z-index:4000;
+">
+  <div class="modal-card" style="text-align:center;">
+
+    <h2>Sair?</h2>
+    <p style="margin:10px 0 20px 0;">Deseja encerrar sessão?</p>
+
+    <button onclick="logoutConfirmado()" class="md-btn-filled" style="background:#d93025;">
+      Sim
+    </button>
+
+    <button onclick="fecharLogoutModal()" class="md-btn-text">
+      Cancelar
+    </button>
+
+  </div>
+</div>
+
+
+<!-- ======================================================
+      T O A S T
+====================================================== -->
+<div id="toast" style="
+  position:fixed; bottom:20px; right:20px;
+  background:var(--md-surface);
+  border:1px solid var(--md-outline);
+  border-radius:16px;
+  padding:14px 18px;
+  min-width:200px;
+  opacity:0;
+  transform:translateY(20px);
+  transition:0.3s;
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  z-index:6000;
+">
+  <div id="toastTitle" style="font-weight:bold;color:var(--md-primary);margin-bottom:4px;"></div>
+  <div id="toastMsg"></div>
+</div>
+
+<!-- Mantendo páginas duplicadas existentes -->
+<div class="page" id="clientes" style="display:none;">
+  <h1>Clientes</h1>
+  <table class="md-card" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>CPF/CNPJ</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Cidade</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody id="clientes-tbody"></tbody>
+  </table>
+</div>
+
+<div class="page" id="produtos" style="display:none;">
+  <h1>Produtos</h1>
+  <table class="md-card" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Categoria</th>
+        <th>Preço</th>
+        <th>Descrição</th>
+        <th>Estoque</th>
+      </tr>
+    </thead>
+    <tbody id="produtos-tbody"></tbody>
+  </table>
+</div>
+
+<div class="page" id="vendas" style="display:none;">
+  <h1>Vendas</h1>
+  <table class="md-card" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Vendedor</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Forma Pagamento</th>
+        <th>Data Compra</th>
+        <th>Data Entrega</th>
+      </tr>
+    </thead>
+    <tbody id="vendas-tbody"></tbody>
+  </table>
+</div>
+<script>
+
+/* =====================================================================
+      CONSTANTES
+===================================================================== */
+const THEME_KEY = 'app_theme_v1';
+const FONT_SCALE_KEY = 'app_font_scale_v1';
+const AVATAR_KEY_PREFIX = 'avatar_path_';
+let currentUser = null;
+let pendingAvatarPath = null;
+
+/* =====================================================================
+      TEMA (CLARO / ESCURO)
+===================================================================== */
+function applyTheme(theme) {
+  if (theme === "light") {
+    document.documentElement.classList.add("light");
+    document.getElementById("themeToggle").textContent = "light_mode";
+  } else {
+    document.documentElement.classList.remove("light");
+    document.getElementById("themeToggle").textContent = "dark_mode";
+  }
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+function toggleTheme() {
+  const saved = localStorage.getItem(THEME_KEY) || "dark";
+  const next = saved === "light" ? "dark" : "light";
+  applyTheme(next);
+}
+
+/* =====================================================================
+      TAMANHO DE FONTE GLOBAL (ACESSIBILIDADE)
+===================================================================== */
+function applyFontScale(scale) {
+  if (scale < 0.8) scale = 0.8;
+  if (scale > 1.6) scale = 1.6;
+
+  document.documentElement.style.setProperty('--font-scale', scale);
+  localStorage.setItem(FONT_SCALE_KEY, scale);
+}
+
+function increaseFont() {
+  const cur = parseFloat(localStorage.getItem(FONT_SCALE_KEY) || "1");
+  applyFontScale(cur + 0.1);
+}
+
+function decreaseFont() {
+  const cur = parseFloat(localStorage.getItem(FONT_SCALE_KEY) || "1");
+  applyFontScale(cur - 0.1);
+}
+
+/* =====================================================================
+      TOAST
+===================================================================== */
+let toastTimeout = null;
+
+function showToast(title, msg) {
+  const t = document.getElementById("toast");
+  document.getElementById("toastTitle").textContent = title;
+  document.getElementById("toastMsg").textContent = msg;
+
+  t.style.opacity = "1";
+  t.style.transform = "translateY(0px)";
+
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    t.style.opacity = "0";
+    t.style.transform = "translateY(20px)";
+  }, 2500);
+}
+
+/* =====================================================================
+      LOGIN
+===================================================================== */
+async function doLogin(event) {
+  if (event) event.preventDefault();
+
+  const cpf = document.getElementById("cpfInput").value.trim();
+  const password = document.getElementById("senhaInput").value.trim();
+
+  if (!cpf || !password) {
+    showToast("Erro", "Preencha CPF e senha");
+    return;
+  }
+
+  try {
+    const res = await window.api.login(cpf, password);
+
+    if (res.ok) {
+      currentUser = res.user;
+      localStorage.setItem('token', res.token); // Armazenar o token
+      preencherUIposLogin();
+      showToast("Bem-vindo", currentUser.name);
+    } else {
+      showToast("Erro", res.message || "CPF ou senha incorretos");
+    }
+
+  } catch (e) {
+    console.error(e);
+    showToast("Erro", "Falha de comunicação");
+  }
+}
+
+/* =====================================================================
+      APÓS LOGIN
+===================================================================== */
+function preencherUIposLogin() {
+
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("mainApp").style.display = "flex";
+  document.getElementById("topbarArea").style.display = "flex";
+
+  document.getElementById("topUserNameText").textContent = currentUser.name;
+  document.getElementById("topUserRoleText").textContent = currentUser.tipo;
+
+  atualizarAvatar();
+  atualizarPerfilSidebar();
+
+  /* ADIÇÃO: controle de visibilidade por função (sem remover nada) */
+  const tipo = (currentUser?.tipo || "").toLowerCase();
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = (tipo === 'admin') ? '' : 'none';
+  });
+}
+
+function temPermissao() {
+  const tipo = (currentUser?.tipo || "").toLowerCase();
+  return tipo === "admin" || tipo === "gerente";
+}
+
+/* =====================================================================
+      AVATAR
+===================================================================== */
+function atualizarAvatar() {
+  const avatarPath = localStorage.getItem(AVATAR_KEY_PREFIX + currentUser.cpf);
+
+  if (avatarPath) {
+    document.getElementById("avatarImg").src = `file://${avatarPath}`;
+    document.getElementById("avatarImg").style.display = "block";
+    document.getElementById("avatarIcon").style.display = "none";
+  }
+}
+
+async function alterarAvatar() {
+  try {
+    const result = await window.api.chooseAvatar();
+
+    if (result.canceled) return;
+    pendingAvatarPath = result.filePaths[0];
+
+    document.getElementById("avatarPreview").src = `file://${pendingAvatarPath}`;
+    document.getElementById("avatarPreviewModal").style.display = "flex";
+
+  } catch (err) {
+    console.error(err);
+    showToast("Erro", "Falha ao escolher imagem");
+  }
+}
+
+document.getElementById("confirmAvatarBtn").addEventListener("click", () => {
+  if (!pendingAvatarPath) return;
+
+  localStorage.setItem(AVATAR_KEY_PREFIX + currentUser.cpf, pendingAvatarPath);
+
+  document.getElementById("avatarImg").src = `file://${pendingAvatarPath}`;
+  document.getElementById("avatarImg").style.display = "block";
+  document.getElementById("avatarIcon").style.display = "none";
+
+  document.getElementById("perfilAvatar").src = `file://${pendingAvatarPath}`;
+  document.getElementById("perfilAvatar").style.display = "block";
+  document.getElementById("perfilAvatarIcon").style.display = "none";
+
+  document.getElementById("avatarPreviewModal").style.display = "none";
+  showToast("Foto atualizada", "Avatar alterado com sucesso");
+});
+
+document.getElementById("cancelAvatarBtn").addEventListener("click", () => {
+  document.getElementById("avatarPreviewModal").style.display = "none";
+});
+
+/* =====================================================================
+      PERFIL LATERAL
+===================================================================== */
+function maskCPF(cpf) {
+  return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "***.$2.$3-$4");
+}
+
+function atualizarPerfilSidebar() {
+  document.getElementById("perfilNome").textContent = currentUser.name;
+  document.getElementById("perfilFuncao").textContent = currentUser.tipo;
+  document.getElementById("perfilCPF").textContent = maskCPF(currentUser.cpf);
+
+  const avatarPath = localStorage.getItem(AVATAR_KEY_PREFIX + currentUser.cpf);
+  if (avatarPath) {
+    document.getElementById("perfilAvatar").src = `file://${avatarPath}`;
+    document.getElementById("perfilAvatar").style.display = "block";
+    document.getElementById("perfilAvatarIcon").style.display = "none";
+  }
+}
+
+document.getElementById("avatarArea").addEventListener("click", () => {
+  document.getElementById("perfilSidebar").style.right = "0";
+});
+
+function fecharPerfilSidebar() {
+  document.getElementById("perfilSidebar").style.right = "-350px";
+}
+
+
+/* =====================================================================
+      NAVEGAÇÃO ENTRE PÁGINAS
+===================================================================== */
+function abrirPagina(id) {
+  document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+  document.getElementById(id).style.display = "block";
+
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("selected"));
+  document.querySelector(`[data-page="${id}"]`).classList.add("selected");
+
+  if (id === "clientes") carregarClientes();
+  if (id === "produtos") carregarProdutos();
+  if (id === "vendas") carregarVendas();
+}
+
+/* =====================================================================
+      LOGOUT
+===================================================================== */
+document.getElementById("logoutBtn").addEventListener("click", pedirLogout);
+
+function pedirLogout() {
+  document.getElementById("logoutModal").style.display = "flex";
+}
+
+function fecharLogoutModal() {
+  document.getElementById("logoutModal").style.display = "none";
+}
+
+function logoutConfirmado() {
+
+  currentUser = null;
+
+  document.getElementById("logoutModal").style.display = "none";
+  document.getElementById("mainApp").style.display = "none";
+  document.getElementById("topbarArea").style.display = "none";
+
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("cpfInput").value = "";
+  document.getElementById("senhaInput").value = "";
+
+  showToast("Sessão encerrada", "Você saiu do sistema");
+
+  /* ADIÇÃO: garantir fechamento do sidebar ao sair */
+  fecharPerfilSidebar();
+}
+
+/* =====================================================================
+      MODAL — RECUPERAR SENHA
+===================================================================== */
+function abrirRecuperacao() {
+  document.getElementById("modalRecuperar").style.display = "flex";
+}
+
+function fecharRecuperacao() {
+  document.getElementById("modalRecuperar").style.display = "none";
+}
+
+async function confirmarRecuperacao() {
+  const funcao = document.getElementById("funcaoRecuperar").value;
+  const idUser = document.getElementById("idRecuperar").value;
+  const cpf = document.getElementById("cpfRecuperar").value;
+  const nova = document.getElementById("novaSenha").value;
+  const conf = document.getElementById("confirmarSenha").value;
+
+  if (!funcao || !idUser || !cpf || !nova || !conf) {
+    showToast("Erro", "Preencha todos os campos");
+    return;
+  }
+
+  if (nova !== conf) {
+    showToast("Erro", "Senhas diferentes");
+    return;
+  }
+
+  try {
+    const r = await window.api.changePassword(cpf, idUser, nova);
+
+    if (r.ok) {
+      showToast("Sucesso", "Senha alterada");
+      fecharRecuperacao();
+    } else {
+      showToast("Erro", r.message);
+    }
+
+  } catch {
+    showToast("Erro", "Falha no servidor");
+  }
+}
+
+/* =====================================================================
+      MODAL — CADASTRAR USUÁRIO
+===================================================================== */
+function abrirCadastro() {
+  document.getElementById("modalCadastro").style.display = "flex";
+}
+
+function fecharCadastro() {
+  document.getElementById("modalCadastro").style.display = "none";
+}
+
+async function confirmarCadastro() {
+  const funcao = document.getElementById("cadFuncao").value;
+  const nome = document.getElementById("cadNome").value;
+  const cpf = document.getElementById("cadCPF").value;
+  const senha = document.getElementById("cadSenha").value;
+
+  if (!funcao || !nome || !cpf || !senha) {
+    showToast("Erro", "Preencha todos os campos");
+    return;
+  }
+
+  if ((currentUser.tipo || "").toLowerCase() !== "admin") {
+    showToast("Erro", "Apenas administradores podem cadastrar");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token'); // Assumindo que o token está armazenado
+    const r = await window.api.createUser({
+      nome,
+      cpf,
+      senha,
+      tipo: funcao,
+      token
+    });
+
+    if (r.ok) {
+      showToast("Sucesso", "Usuário cadastrado");
+      fecharCadastro();
+    } else {
+      showToast("Erro", r.message);
+    }
+
+  } catch {
+    showToast("Erro", "Falha no servidor");
+  }
+}
+
+/* =====================================================================
+      FUNÇÕES EXISTENTES DE VENDAS (mantidas)
+===================================================================== */
+function abrirModalNovaVenda() {
+  if (!temPermissao()) {
+    showToast("Acesso negado", "Somente gerente ou administrador podem criar vendas");
+    return;
+  }
+  alert("Abrir modal de Nova Venda");
+}
+
+function abrirModalEditarVenda() {
+  if (!temPermissao()) {
+    showToast("Acesso negado", "Somente gerente ou administrador podem editar vendas");
+    return;
+  }
+  alert("Abrir modal de Editar Venda");
+}
+
+function abrirModalExcluirVenda() {
+  if (!temPermissao()) {
+    showToast("Acesso negado", "Somente gerente ou administrador podem excluir vendas");
+    return;
+  }
+  alert("Abrir modal de Excluir Venda");
+}
+
+/* =====================================================================
+      RENDERIZAÇÕES EXISTENTES (mantidas)
+===================================================================== */
+function renderizarClientes(clientes) {
+  const tbody = document.getElementById("clientes-tbody");
+  tbody.innerHTML = "";
+
+  clientes.forEach(c => {
+    const tr = document.createElement("tr");
+
+    let acoes = "";
+    if (temPermissao()) {
+      acoes = `
+        <button onclick="editarCliente(${c.id})" class="md-btn-text">
+          <span class="material-icons">edit</span>
+        </button>
+        <button onclick="excluirCliente(${c.id})" class="md-btn-text">
+          <span class="material-icons">delete</span>
+        </button>
+      `;
+    }
+
+    tr.innerHTML = `
+      <td>${c.id}</td>
+      <td>${c.nome}</td>
+      <td>${c.cpf || c.cnpj || ''}</td>
+      <td>${c.email || ''}</td>
+      <td>${c.telefone || ''}</td>
+      <td>${c.cidade || ''}</td>
+      <td>${c.estado || ''}</td>
+      <td>${acoes}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+function renderizarProdutos(produtos) {
+  const tbody = document.getElementById("produtos-tbody");
+  tbody.innerHTML = "";
+
+  produtos.forEach(p => {
+    const tr = document.createElement("tr");
+
+    const estoqueClass = p.estoque < 10 ? "style='color:red;font-weight:bold;'" : "";
+
+    tr.innerHTML = `
+      <td>${p.id}</td>
+      <td>${p.nome}</td>
+      <td>${p.categoria}</td>
+      <td>R$ ${p.preco}</td>
+      <td>${p.descricao || ''}</td>
+      <td ${estoqueClass}>${p.estoque}</td>
+    `;
+
+    tbody.appendChild(tr);
+
+    if (p.estoque < 10) {
+      showToast("Aviso", `Produto "${p.nome}" com estoque baixo (${p.estoque})`);
+    }
+  });
+}
+
+function renderizarVendas(vendas) {
+  const tbody = document.getElementById("vendas-tbody");
+  tbody.innerHTML = "";
+
+  vendas.forEach(v => {
+    const tr = document.createElement("tr");
+
+    let acoes = "";
+    if (temPermissao()) {
+      acoes = `
+        <button onclick="editarVenda(${v.id})" class="md-btn-text">
+          <span class="material-icons">edit</span>
+        </button>
+        <button onclick="excluirVenda(${v.id})" class="md-btn-text">
+          <span class="material-icons">delete</span>
+        </button>
+      `;
+    }
+
+    tr.innerHTML = `
+      <td>${v.id}</td>
+      <td>${v.cliente}</td>
+      <td>${v.vendedor}</td>
+      <td>R$ ${v.total}</td>
+      <td>${v.status}</td>
+      <td>${v.forma_pagamento}</td>
+      <td>${v.data_compra}</td>
+      <td>${v.data_entrega}</td>
+      <td>${acoes}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* =====================================================================
+      INICIALIZAÇÃO
+===================================================================== */
+window.addEventListener("DOMContentLoaded", () => {
+
+  const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
+  applyTheme(savedTheme);
+
+  const savedScale = parseFloat(localStorage.getItem(FONT_SCALE_KEY) || "1");
+  applyFontScale(savedScale);
+
+  document.getElementById("themeToggle").addEventListener("click", toggleTheme);
+  document.getElementById("fontPlusBtn").addEventListener("click", increaseFont);
+  document.getElementById("fontMinusBtn").addEventListener("click", decreaseFont);
+
+  ["modalRecuperar","modalCadastro","avatarPreviewModal","logoutModal"]
+    .forEach(id => {
+      document.getElementById(id).addEventListener("click", e => {
+        if (e.target.id === id) e.target.style.display = "none";
+      });
+    });
+
+});
+
+/* =====================================================================
+      CARREGAMENTO DE DADOS EXISTENTE
+===================================================================== */
+async function carregarClientes() {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch("http://localhost:3000/api/dados/clientes", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    renderizarClientes(json.data);
+  } catch (err) {
+    console.error("Erro ao carregar clientes:", err);
+    showToast("Erro", "Não foi possível carregar clientes");
+  }
+}
+
+async function carregarProdutos() {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch("http://localhost:3000/api/dados/produtos", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    renderizarProdutos(json.data);
+  } catch (err) {
+    console.error("Erro ao carregar produtos:", err);
+    showToast("Erro", "Não foi possível carregar produtos");
+  }
+}
+
+async function carregarVendas() {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch("http://localhost:3000/api/dados/vendas", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    renderizarVendas(json.data); 
+  } catch (err) {
+    console.error("Erro ao carregar vendas:", err);
+    showToast("Erro", "Não foi possível carregar vendas");
+  }
+}
+
+function formatarData(data) {
+  if (!data) return "-"; // mostra traço se for null
+  const d = new Date(data);
+  return d.toLocaleDateString("pt-BR"); // ex: 10/01/2025
+}
+
+
+function renderizarVendas(vendas) {
+  const tbody = document.getElementById("vendas-tbody");
+  tbody.innerHTML = "";
+
+  vendas.forEach(v => {
+    const tr = document.createElement("tr");
+
+    let acoes = "";
+    if (temPermissao()) {
+      acoes = `
+        <button onclick="editarVenda(${v.id})" class="md-btn-text">
+          <span class="material-icons">edit</span>
+        </button>
+        <button onclick="excluirVenda(${v.id})" class="md-btn-text">
+          <span class="material-icons">delete</span>
+        </button>
+      `;
+    }
+
+    tr.innerHTML = `
+      <td>${v.id}</td>
+      <td>${v.cliente}</td>
+      <td>${v.vendedor}</td>
+      <td>R$ ${v.total}</td>
+      <td>${v.status}</td>
+      <td>${v.forma_pagamento}</td>
+      <td>${formatarData(v.data_compra)}</td>
+      <td>${formatarData(v.data_entrega)}</td>
+      <td>${acoes}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+
+/* =====================================================================
+      EXPORTAR PARA ESCOPO GLOBAL (NECESSÁRIO PARA onclick)
+===================================================================== */
+window.abrirPagina = abrirPagina;
+window.carregarClientes = carregarClientes;
+window.carregarProdutos = carregarProdutos;
+window.carregarVendas = carregarVendas;
+window.doLogin = doLogin;
+window.abrirRecuperacao = abrirRecuperacao;
+window.fecharRecuperacao = fecharRecuperacao;
+window.confirmarRecuperacao = confirmarRecuperacao;
+window.alterarAvatar = alterarAvatar;
+window.fecharPerfilSidebar = fecharPerfilSidebar;
+window.pedirLogout = pedirLogout;
+window.fecharCadastro = fecharCadastro;
+window.abrirCadastro = abrirCadastro;
+window.confirmarCadastro = confirmarCadastro;
+
+/* ====================== ADIÇÃO: Handlers CRUD que realmente chamam backend e auditam ====================== */
+
+/* Confirmar credenciais de admin (confirmação extra) */
+async function confirmarAdmin() {
+  const tipo = (currentUser?.tipo || "").toLowerCase();
+  if (tipo !== "admin") return false;
+  const senha = prompt("Confirmação de administrador: digite sua senha");
+  if (!senha) return false;
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch("http://localhost:3000/api/admin/confirm", {
+      method: "POST",
+      headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ cpf: currentUser.cpf, password: senha })
+    });
+    return r.ok;
+  } catch {
+    showToast("Erro", "Falha na confirmação de admin");
+    return false;
+  }
+}
+
+/* Auditoria (registra apenas quando logado como admin) */
+function registrarAuditoria(acao, entidade, idEntidade, detalhes="-") {
+  const tipo = (currentUser?.tipo || "").toLowerCase();
+  if (tipo !== "admin") return;
+  const tbody = document.getElementById("auditoria-tbody");
+  if (!tbody) return;
+  const tr = document.createElement("tr");
+  const agora = new Date().toLocaleString("pt-BR");
+  tr.innerHTML = `
+    <td>${agora}</td>
+    <td>${currentUser.name}</td>
+    <td>${currentUser.tipo}</td>
+    <td>${acao}</td>
+    <td>${entidade}</td>
+    <td>${idEntidade ?? "-"}</td>
+    <td>${detalhes}</td>
+  `;
+  tbody.appendChild(tr);
+}
+
+/* CLIENTES */
+async function onAdicionarClienteClick() {
+  if ((currentUser?.tipo || "").toLowerCase() !== "admin") {
+    showToast("Acesso negado", "Somente administradores podem adicionar");
+    return;
+  }
+  if (!(await confirmarAdmin())) { showToast("Erro", "Confirmação de admin falhou"); return; }
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch("http://localhost:3000/api/clientes", {
+      method: "POST",
+      headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ /* dados do cliente (preencher via modal futuramente) */ })
+    });
+    const j = await r.json();
+    if (r.ok) { showToast("Sucesso", "Cliente adicionado"); carregarClientes(); registrarAuditoria("Adicionar","Cliente", j.id); }
+    else { showToast("Erro", j.message || "Falha ao adicionar"); }
+  } catch { showToast("Erro", "Falha ao adicionar cliente"); }
+}
+async function onEditarClienteClick(id) {
+  const tipo = (currentUser?.tipo || "").toLowerCase();
+  if (!["admin","gerente","vendedor"].includes(tipo)) { showToast("Acesso negado","Sem permissão"); return; }
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch(`http://localhost:3000/api/clientes/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ /* dados atualizados */ })
+    });
+    const j = await r.json();
+    if (r.ok) { showToast("Sucesso","Cliente atualizado"); carregarClientes(); registrarAuditoria("Editar","Cliente", id); }
+    else { showToast("Erro", j.message || "Falha ao editar"); }
+  } catch { showToast("Erro","Falha ao editar cliente"); }
+}
+async function onRemoverClienteClick(id) {
+  if ((currentUser?.tipo || "").toLowerCase() !== "admin") { showToast("Acesso negado","Somente administradores"); return; }
+  if (!(await confirmarAdmin())) { showToast("Erro", "Confirmação de admin falhou"); return; }
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch(`http://localhost:3000/api/clientes/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (r.ok) { showToast("Sucesso","Cliente removido"); carregarClientes(); registrarAuditoria("Remover","Cliente", id); }
+    else { const j = await r.json(); showToast("Erro", j.message || "Falha ao remover"); }
+  } catch { showToast("Erro","Falha ao remover cliente"); }
+}
+
+/* PRODUTOS */
+async function onAdicionarProdutoClick() {
+  if ((currentUser?.tipo || "").toLowerCase() !== "admin") { showToast("Acesso negado","Somente administradores"); return; }
+  if (!(await confirmarAdmin())) { showToast("Erro", "Confirmação de admin falhou"); return; }
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch("http://localhost:3000/api/produtos", {
+      method: "POST",
+      headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ /* dados do produto */ })
+    });
+    const j = await r.json();
+    if (r.ok) { showToast("Sucesso","Produto adicionado"); carregarProdutos(); registrarAuditoria("Adicionar","Produto", j.id); }
+    else { showToast("Erro", j.message || "Falha ao adicionar"); }
+  } catch { showToast("Erro","Falha ao adicionar produto"); }
+}
+async function onEditarProdutoClick(id) {
+  const tipo = (currentUser?.tipo || "").toLowerCase();
+  if (!["admin","gerente","vendedor"].includes(tipo)) { showToast("Acesso negado","Sem permissão"); return; }
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch(`http://localhost:3000/api/produtos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ /* dados atualizados */ })
+    });
+    const j = await r.json();
+    if (r.ok) { showToast("Sucesso","Produto atualizado"); carregarProdutos(); registrarAuditoria("Editar","Produto", id); }
+    else { showToast("Erro", j.message || "Falha ao editar"); }
+  } catch { showToast("Erro","Falha ao editar produto"); }
+}
+async function onRemoverProdutoClick(id) {
+  if ((currentUser?.tipo || "").toLowerCase() !== "admin") { showToast("Acesso negado","Somente administradores"); return; }
+  if (!(await confirmarAdmin())) { showToast("Erro", "Confirmação de admin falhou"); return; }
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch(`http://localhost:3000/api/produtos/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (r.ok) { showToast("Sucesso","Produto removido"); carregarProdutos(); registrarAuditoria("Remover","Produto", id); }
+    else { const j = await r.json(); showToast("Erro", j.message || "Falha ao remover"); }
+  } catch { showToast("Erro","Falha ao remover produto"); }
+}
+
+/* VENDAS */
+async function onAdicionarVendaClick() {
+  const tipo = (currentUser?.tipo || "").toLowerCase();
+  if (!["admin","gerente","vendedor"].includes(tipo)) { showToast("Acesso negado","Sem permissão"); return; }
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch("http://localhost:3000/api/vendas", {
+      method: "POST",
+      headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ /* dados da venda */ })
+    });
+    const j = await r.json();
+    if (r.ok) { showToast("Sucesso","Venda adicionada"); carregarVendas(); registrarAuditoria("Adicionar","Venda", j.id); }
+    else { showToast("Erro", j.message || "Falha ao adicionar"); }
+  } catch { showToast("Erro","Falha ao adicionar venda"); }
+}
+async function onEditarVendaClick(id) {
+  const tipo = (currentUser?.tipo || "").toLowerCase();
+  if (!["admin","gerente","vendedor"].includes(tipo)) { showToast("Acesso negado","Sem permissão"); return; }
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch(`http://localhost:3000/api/vendas/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type":"application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ /* dados atualizados */ })
+    });
+    const j = await r.json();
+    if (r.ok) { showToast("Sucesso","Venda atualizada"); carregarVendas(); registrarAuditoria("Editar","Venda", id); }
+    else { showToast("Erro", j.message || "Falha ao editar"); }
+  } catch { showToast("Erro","Falha ao editar venda"); }
+}
+async function onRemoverVendaClick(id) {
+  if ((currentUser?.tipo || "").toLowerCase() !== "admin") { showToast("Acesso negado","Somente administradores"); return; }
+  if (!(await confirmarAdmin())) { showToast("Erro", "Confirmação de admin falhou"); return; }
+  try {
+    const token = localStorage.getItem("token");
+    const r = await fetch(`http://localhost:3000/api/vendas/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (r.ok) { showToast("Sucesso","Venda removida"); carregarVendas(); registrarAuditoria("Remover","Venda", id); }
+    else { const j = await r.json(); showToast("Erro", j.message || "Falha ao remover"); }
+  } catch { showToast("Erro","Falha ao remover venda"); }
+}
+
+</script>
+</body>
+</html>
