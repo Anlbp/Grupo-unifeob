@@ -1,11 +1,15 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "build": {
+    "icon": "assets/icone.png"
+  },
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dist": "electron-builder"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
