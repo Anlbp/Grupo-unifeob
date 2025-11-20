@@ -398,7 +398,10 @@ table.md-card tbody tr:nth-child(even) {
 }
 
 /* Elementos exclusivos de administrador (visibilidade controlada via JS após login) */
-.admin-only { display: none; }
+/* Removido display: none para permitir controle via JavaScript */
+.admin-only { 
+  /* Visibilidade controlada via JavaScript na função preencherUIposLogin() */
+}
 
 /* Cards de métricas adicionais no dashboard */
 .cards { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 12px; }
@@ -510,7 +513,7 @@ table.md-card tbody tr:nth-child(even) {
    </button>
 
 
-    <button onclick="abrirCadastro()" data-page="adminCadastro" class="nav-item">
+    <button onclick="abrirCadastro()" data-page="adminCadastro" class="nav-item admin-only">
       <span class="material-icons">person_add</span>
     </button>
 
@@ -568,12 +571,6 @@ table.md-card tbody tr:nth-child(even) {
       <button class="btn-crud btn-add" data-crud-section="clientes" data-crud-action="add" onclick="onAdicionarClienteClick()">
         <span class="material-icons">add</span> Adicionar
       </button>
-      <button class="btn-crud btn-edit" data-crud-section="clientes" data-crud-action="edit" onclick="onEditarClienteClick()">
-        <span class="material-icons">edit</span> Editar
-      </button>
-      <button class="btn-crud btn-remove" data-crud-section="clientes" data-crud-action="remove" onclick="onRemoverClienteClick()">
-        <span class="material-icons">delete</span> Remover
-      </button>
     </div>
 
     <table class="md-card" style="width:100%; border-collapse: collapse;">
@@ -602,12 +599,6 @@ table.md-card tbody tr:nth-child(even) {
       <button class="btn-crud btn-add" data-crud-section="produtos" data-crud-action="add" onclick="onAdicionarProdutoClick()">
         <span class="material-icons">add</span> Adicionar
       </button>
-      <button class="btn-crud btn-edit" data-crud-section="produtos" data-crud-action="edit" onclick="onEditarProdutoClick()">
-        <span class="material-icons">edit</span> Editar
-      </button>
-      <button class="btn-crud btn-remove" data-crud-section="produtos" data-crud-action="remove" onclick="onRemoverProdutoClick()">
-        <span class="material-icons">delete</span> Remover
-      </button>
     </div>
 
     <table class="md-card" style="width:100%; border-collapse: collapse;">
@@ -635,12 +626,6 @@ table.md-card tbody tr:nth-child(even) {
     <button class="btn-crud btn-add" data-crud-section="vendas" data-crud-action="add" onclick="onAdicionarVendaClick()">
       <span class="material-icons">add</span> Adicionar
     </button>
-    <button class="btn-crud btn-edit" data-crud-section="vendas" data-crud-action="edit" onclick="onEditarVendaClick()">
-      <span class="material-icons">edit</span> Editar
-    </button>
-    <button class="btn-crud btn-remove" data-crud-section="vendas" data-crud-action="remove" onclick="onRemoverVendaClick()">
-      <span class="material-icons">delete</span> Remover
-    </button>
   </div>
 
   <table class="md-card" style="width:100%; border-collapse: collapse;">
@@ -662,10 +647,24 @@ table.md-card tbody tr:nth-child(even) {
 </div>
 
   <!-- CADASTRO ADMIN -->
-  <div class="page" id="adminCadastro" style="display:none;">
+  <div class="page admin-only" id="adminCadastro" style="display:none;">
     <h1>Cadastrar Usuário</h1>
-    <div class="md-card">
-      Área para adicionar novos usuários ao sistema.
+    <div class="md-card" style="padding: 20px; margin-bottom: 20px;">
+      <p>Área para adicionar novos usuários ao sistema.</p>
+      <button class="md-btn-filled" onclick="abrirCadastro()" style="margin-top: 10px;">
+        <span class="material-icons" style="vertical-align: middle; margin-right: 5px;">person_add</span>
+        Cadastrar Novo Usuário
+      </button>
+    </div>
+    
+    <!-- Botão de Auditoria -->
+    <div class="md-card" style="padding: 20px;">
+      <h2 style="margin-top: 0;">Logs de Auditoria</h2>
+      <p>Visualize todas as ações realizadas pelos usuários do sistema.</p>
+      <button class="md-btn-filled" onclick="abrirPagina('auditoria')" style="margin-top: 10px;">
+        <span class="material-icons" style="vertical-align: middle; margin-right: 5px;">manage_search</span>
+        Ver Logs de Auditoria
+      </button>
     </div>
   </div>
 
@@ -694,21 +693,29 @@ table.md-card tbody tr:nth-child(even) {
 
 <!-- ADIÇÃO: Página de Auditoria exclusiva para Admin (apenas adicionada) -->
 <div class="page admin-only" id="auditoria" style="display:none;">
-  <h1>Auditoria</h1>
-  <table class="md-card" style="width:100%; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th>Data/Hora</th>
-        <th>Usuário</th>
-        <th>Função</th>
-        <th>Ação</th>
-        <th>Entidade</th>
-        <th>ID Entidade</th>
-        <th>Detalhes</th>
-      </tr>
-    </thead>
-    <tbody id="auditoria-tbody"></tbody>
-  </table>
+  <h1>Logs de Auditoria</h1>
+  <div style="margin-bottom: 20px;">
+    <button class="md-btn-filled" onclick="carregarAuditoria()" style="margin-right: 10px;">
+      <span class="material-icons" style="vertical-align: middle; margin-right: 5px;">refresh</span>
+      Atualizar
+    </button>
+  </div>
+  <div style="overflow-x: auto;">
+    <table class="md-card" style="width:100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>Usuário</th>
+          <th>Função</th>
+          <th>Ação</th>
+          <th>Entidade</th>
+          <th>ID Entidade</th>
+          <th>Detalhes</th>
+        </tr>
+      </thead>
+      <tbody id="auditoria-tbody"></tbody>
+    </table>
+  </div>
 </div>
 
 </main>
@@ -1484,8 +1491,25 @@ function preencherUIposLogin() {
 
   /* ADIÇÃO: controle de visibilidade por função (sem remover nada) */
   const tipo = getUserRole();
+  const isAdminUser = tipo === 'admin';
+  
   document.querySelectorAll('.admin-only').forEach(el => {
-    el.style.display = (tipo === 'admin') ? '' : 'none';
+    if (isAdminUser) {
+      // Para botões na navegação, mostrar normalmente
+      if (el.classList.contains('nav-item')) {
+        el.style.display = 'block';
+      } else if (el.classList.contains('page')) {
+        // Para páginas, não alterar o display aqui (será controlado pela função abrirPagina)
+        // Apenas garantir que não está forçado como none se não for a página ativa
+        // As páginas começam com display:none inline, então não mexemos aqui
+      } else {
+        // Para outros elementos, mostrar
+        el.style.display = 'block';
+      }
+    } else {
+      // Ocultar para não-admins
+      el.style.display = 'none';
+    }
   });
 }
 
@@ -1585,6 +1609,7 @@ function abrirPagina(id) {
   if (id === "clientes") carregarClientes();
   if (id === "produtos") carregarProdutos();
   if (id === "vendas") carregarVendas();
+  if (id === "auditoria") carregarAuditoria();
 }
 
 /* =====================================================================
@@ -1921,6 +1946,67 @@ async function carregarVendas() {
   }
 }
 
+async function carregarAuditoria() {
+  if (!isAdmin()) {
+    showToast("Acesso negado", "Apenas administradores podem visualizar logs de auditoria");
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch("http://localhost:3000/api/dados/auditoria?limit=200", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    if (json.ok) {
+      renderizarAuditoria(json.data);
+    } else {
+      showToast("Erro", json.message || "Não foi possível carregar logs de auditoria");
+    }
+  } catch (err) {
+    console.error("Erro ao carregar auditoria:", err);
+    showToast("Erro", "Não foi possível carregar logs de auditoria");
+  }
+}
+
+function renderizarAuditoria(logs) {
+  const tbody = document.getElementById("auditoria-tbody");
+  if (!tbody) return;
+  
+  tbody.innerHTML = "";
+
+  if (!logs || logs.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="7" style="text-align: center; padding: 20px;">Nenhum log de auditoria encontrado</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+
+  logs.forEach(log => {
+    const tr = document.createElement("tr");
+    const dataHora = new Date(log.created_at).toLocaleString("pt-BR");
+    const usuario = log.usuario_nome || log.username || "-";
+    const funcao = log.usuario_role || "-";
+    const acao = log.action || "-";
+    const entidade = log.resource || "-";
+    const idEntidade = log.resource_id || "-";
+    const detalhes = log.error_message 
+      ? `Erro: ${log.error_message}` 
+      : `${log.method} ${log.endpoint}`;
+
+    tr.innerHTML = `
+      <td>${dataHora}</td>
+      <td>${usuario}</td>
+      <td>${funcao}</td>
+      <td>${acao}</td>
+      <td>${entidade}</td>
+      <td>${idEntidade}</td>
+      <td style="font-size: 0.9em; color: ${log.response_status >= 400 ? 'red' : 'inherit'}">${detalhes}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
 function formatarData(data) {
   if (!data) return "-"; // mostra traço se for null
   const d = new Date(data);
@@ -1973,6 +2059,7 @@ window.abrirPagina = abrirPagina;
 window.carregarClientes = carregarClientes;
 window.carregarProdutos = carregarProdutos;
 window.carregarVendas = carregarVendas;
+window.carregarAuditoria = carregarAuditoria;
 window.doLogin = doLogin;
 window.abrirRecuperacao = abrirRecuperacao;
 window.fecharRecuperacao = fecharRecuperacao;

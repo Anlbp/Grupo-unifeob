@@ -6,6 +6,8 @@
   const authRoutes = require('./routes/auth');
   const protectedRoutes = require('./routes/protected');
   const dataRoutes = require('./routes/data');
+  const authMiddleware = require('./middlewares/authMiddleware');
+  const auditMiddleware = require('./middlewares/auditMiddleware');
 
   const app = express();
   const PORT = process.env.PORT || 3000;
@@ -16,6 +18,7 @@
   // Rotas
   app.use('/', authRoutes);            // /register, /login
   app.use('/api', protectedRoutes);    // /api/secret (exemplo)
+  // Rotas de dados - o auditMiddleware será aplicado dentro das rotas após authMiddleware
   app.use('/api/dados', dataRoutes);   // CRUD de exemplo
 
   app.get('/', (req, res) => {

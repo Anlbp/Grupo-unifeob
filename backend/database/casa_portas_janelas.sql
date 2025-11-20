@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS itens_venda (
   subtotal DECIMAL(10, 2) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (venda_id) REFERENCES vendas(id) ON DELETE CASCADE,
-  FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE RESTRICT,
+  FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE,
   INDEX idx_venda (venda_id),
   INDEX idx_produto (produto_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

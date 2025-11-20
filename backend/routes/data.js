@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../database/connection');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
+const auditMiddleware = require('../middlewares/auditMiddleware');
 
 const requireRoles = (roles) => roleMiddleware(Array.isArray(roles) ? roles : [roles]);
 
@@ -33,7 +34,7 @@ const BASE_VENDA_SELECT = `
 
 // ====================== CLIENTES ======================
 
-router.get('/clientes', authMiddleware, async (_req, res) => {
+router.get('/clientes', authMiddleware, auditMiddleware, async (_req, res) => {
   try {
     const [rows] = await db.promise().query(`
       SELECT id, nome, cpf, cnpj, email, telefone, endereco, cidade, estado, cep, created_at, updated_at
@@ -46,7 +47,7 @@ router.get('/clientes', authMiddleware, async (_req, res) => {
   }
 });
 
-router.get('/clientes/:id', authMiddleware, async (req, res) => {
+router.get('/clientes/:id', authMiddleware, auditMiddleware, async (req, res) => {
   try {
     const [rows] = await db.promise().query(
       `SELECT id, nome, cpf, cnpj, email, telefone, endereco, cidade, estado, cep
@@ -63,7 +64,7 @@ router.get('/clientes/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/clientes', authMiddleware, requireRoles(['admin']), async (req, res) => {
+router.post('/clientes', authMiddleware, auditMiddleware, requireRoles(['admin']), async (req, res) => {
   const { nome, cpf, cnpj, email, telefone, endereco, cidade, estado, cep } = req.body;
   if (!nome) {
     return res.status(400).json({ ok: false, message: 'Nome do cliente é obrigatório.' });
@@ -81,7 +82,7 @@ router.post('/clientes', authMiddleware, requireRoles(['admin']), async (req, re
   }
 });
 
-router.put('/clientes/:id', authMiddleware, requireRoles(['admin', 'gerente']), async (req, res) => {
+router.put('/clientes/:id', authMiddleware, auditMiddleware, requireRoles(['admin', 'gerente']), async (req, res) => {
   const { nome, cpf, cnpj, email, telefone, endereco, cidade, estado, cep } = req.body;
 
   const fields = [];
@@ -117,7 +118,7 @@ router.put('/clientes/:id', authMiddleware, requireRoles(['admin', 'gerente']), 
   }
 });
 
-router.delete('/clientes/:id', authMiddleware, requireRoles(['admin']), async (req, res) => {
+router.delete('/clientes/:id', authMiddleware, auditMiddleware, requireRoles(['admin']), async (req, res) => {
   try {
     const [result] = await db.promise().query('DELETE FROM clientes WHERE id = ?', [req.params.id]);
     if (!result.affectedRows) {
@@ -137,7 +138,7 @@ router.delete('/clientes/:id', authMiddleware, requireRoles(['admin']), async (r
 
 // ====================== PRODUTOS ======================
 
-router.get('/produtos', authMiddleware, async (_req, res) => {
+router.get('/produtos', authMiddleware, auditMiddleware, async (_req, res) => {
   try {
     const [rows] = await db.promise().query(`
       SELECT id, nome, categoria, preco, descricao, estoque, created_at, updated_at
@@ -150,7 +151,7 @@ router.get('/produtos', authMiddleware, async (_req, res) => {
   }
 });
 
-router.get('/produtos/:id', authMiddleware, async (req, res) => {
+router.get('/produtos/:id', authMiddleware, auditMiddleware, async (req, res) => {
   try {
     const [rows] = await db.promise().query(
       `SELECT id, nome, categoria, preco, descricao, estoque
@@ -167,7 +168,7 @@ router.get('/produtos/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/produtos', authMiddleware, requireRoles(['admin']), async (req, res) => {
+router.post('/produtos', authMiddleware, auditMiddleware, requireRoles(['admin']), async (req, res) => {
   const { nome, categoria, preco, descricao, estoque } = req.body;
   if (!nome || !categoria || preco === undefined) {
     return res.status(400).json({ ok: false, message: 'Nome, categoria e preço são obrigatórios.' });
@@ -185,7 +186,7 @@ router.post('/produtos', authMiddleware, requireRoles(['admin']), async (req, re
   }
 });
 
-router.put('/produtos/:id', authMiddleware, requireRoles(['admin', 'gerente']), async (req, res) => {
+router.put('/produtos/:id', authMiddleware, auditMiddleware, requireRoles(['admin', 'gerente']), async (req, res) => {
   const { nome, categoria, preco, descricao, estoque } = req.body;
 
   const fields = [];
@@ -227,21 +228,45 @@ router.put('/produtos/:id', authMiddleware, requireRoles(['admin', 'gerente']), 
   }
 });
 
-router.delete('/produtos/:id', authMiddleware, requireRoles(['admin']), async (req, res) => {
+router.delete('/produtos/:id', authMiddleware, auditMiddleware, requireRoles(['admin']), async (req, res) => {
+  const connection = db.promise();
+  let transactionStarted = false;
+  
   try {
-    const [result] = await db.promise().query('DELETE FROM produtos WHERE id = ?', [req.params.id]);
+    // Verificar se o produto existe
+    const [[produto]] = await connection.query('SELECT id FROM produtos WHERE id = ?', [req.params.id]);
+    if (!produto) {
+      return res.status(404).json({ ok: false, message: 'Produto não encontrado.' });
+    }
+
+    await connection.beginTransaction();
+    transactionStarted = true;
+
+    // Remover itens de venda associados primeiro (caso a foreign key ainda esteja com RESTRICT)
+    await connection.query('DELETE FROM itens_venda WHERE produto_id = ?', [req.params.id]);
+
+    // Remover o produto
+    const [result] = await connection.query('DELETE FROM produtos WHERE id = ?', [req.params.id]);
+    
+    await connection.commit();
+    transactionStarted = false;
+
     if (!result.affectedRows) {
       return res.status(404).json({ ok: false, message: 'Produto não encontrado.' });
     }
     res.json({ ok: true, message: 'Produto removido com sucesso!' });
   } catch (err) {
-    if (err.code === 'ER_ROW_IS_REFERENCED_2') {
-      return res.status(409).json({
-        ok: false,
-        message: 'Não é possível remover o produto porque existem itens de venda associados.'
-      });
+    if (transactionStarted) {
+      try {
+        await connection.rollback();
+      } catch (rollbackErr) {
+        console.error('Erro ao fazer rollback:', rollbackErr);
+      }
     }
-    respondWithError(res, err, 'Erro ao remover produto');
+    console.error('Erro ao remover produto:', err);
+    // Retornar mensagem de erro mais específica
+    const errorMessage = err.message || 'Erro ao remover produto';
+    return res.status(500).json({ ok: false, message: errorMessage });
   }
 });
 
@@ -251,7 +276,7 @@ const canCreateVenda = (role) => ['admin', 'gerente', 'vendedor'].includes(role)
 const canUpdateVenda = (role) => ['admin', 'gerente'].includes(role);
 const canViewVendas = (role) => ['admin', 'gerente', 'vendedor'].includes(role);
 
-router.get('/vendas', authMiddleware, async (req, res) => {
+router.get('/vendas', authMiddleware, auditMiddleware, async (req, res) => {
   if (!canViewVendas(req.user.role)) {
     return res.status(403).json({ ok: false, message: 'Acesso negado para visualizar vendas.' });
   }
@@ -269,7 +294,7 @@ router.get('/vendas', authMiddleware, async (req, res) => {
   }
 });
 
-router.get('/vendas/:id', authMiddleware, async (req, res) => {
+router.get('/vendas/:id', authMiddleware, auditMiddleware, async (req, res) => {
   try {
     if (req.user.role === 'vendedor' && req.user.id !== undefined) {
       const [[vendaCheck]] = await db.promise().query('SELECT usuario_id FROM vendas WHERE id = ?', [req.params.id]);
@@ -300,7 +325,7 @@ router.get('/vendas/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/vendas', authMiddleware, async (req, res) => {
+router.post('/vendas', authMiddleware, auditMiddleware, async (req, res) => {
   if (!canCreateVenda(req.user.role)) {
     return res.status(403).json({ ok: false, message: 'Acesso negado para criar vendas.' });
   }
@@ -370,7 +395,7 @@ router.post('/vendas', authMiddleware, async (req, res) => {
   }
 });
 
-router.put('/vendas/:id', authMiddleware, async (req, res) => {
+router.put('/vendas/:id', authMiddleware, auditMiddleware, async (req, res) => {
   if (!canUpdateVenda(req.user.role)) {
     return res.status(403).json({ ok: false, message: 'Apenas administradores ou gerentes podem editar vendas.' });
   }
@@ -446,7 +471,7 @@ router.put('/vendas/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/vendas/:id', authMiddleware, requireRoles(['admin']), async (req, res) => {
+router.delete('/vendas/:id', authMiddleware, auditMiddleware, requireRoles(['admin']), async (req, res) => {
   try {
     const [result] = await db
       .promise()
@@ -459,6 +484,51 @@ router.delete('/vendas/:id', authMiddleware, requireRoles(['admin']), async (req
     res.json({ ok: true, message: 'Venda removida com sucesso!' });
   } catch (err) {
     respondWithError(res, err, 'Erro ao remover venda');
+  }
+});
+
+// ====================== AUDITORIA ======================
+
+router.get('/auditoria', authMiddleware, requireRoles(['admin']), async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 100;
+    const offset = parseInt(req.query.offset) || 0;
+
+    const [logs] = await db.promise().query(
+      `SELECT 
+        al.id,
+        al.usuario_id,
+        al.username,
+        al.action,
+        al.resource,
+        al.resource_id,
+        al.method,
+        al.endpoint,
+        al.ip_address,
+        al.response_status,
+        al.error_message,
+        al.created_at,
+        u.nome AS usuario_nome,
+        u.role AS usuario_role
+       FROM audit_logs al
+       LEFT JOIN usuarios u ON al.usuario_id = u.id
+       ORDER BY al.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [limit, offset]
+    );
+
+    const [countResult] = await db.promise().query('SELECT COUNT(*) as total FROM audit_logs');
+    const total = countResult[0].total;
+
+    res.json({ 
+      ok: true, 
+      data: logs,
+      total,
+      limit,
+      offset
+    });
+  } catch (err) {
+    respondWithError(res, err, 'Erro ao buscar logs de auditoria');
   }
 });
 
