@@ -3,9 +3,10 @@
   const cors = require('cors');
   const path = require('path');
 
-  const authRoutes = require('./routes/auth');
-  const protectedRoutes = require('./routes/protected');
-  const dataRoutes = require('./routes/data');
+const authRoutes = require('./routes/auth');
+const protectedRoutes = require('./routes/protected');
+const dataRoutes = require('./routes/data');
+const dashboardRoutes = require('./routes/dashboard');
   const authMiddleware = require('./middlewares/authMiddleware');
   const auditMiddleware = require('./middlewares/auditMiddleware');
 
@@ -19,7 +20,8 @@
   app.use('/', authRoutes);            // /register, /login
   app.use('/api', protectedRoutes);    // /api/secret (exemplo)
   // Rotas de dados - o auditMiddleware será aplicado dentro das rotas após authMiddleware
-  app.use('/api/dados', dataRoutes);   // CRUD de exemplo
+app.use('/api/dados', dataRoutes);   // CRUD de exemplo
+app.use('/dashboard', dashboardRoutes); // métricas do dashboard
 
   app.get('/', (req, res) => {
     res.send('Servidor rodando com autenticação por CPF, RBAC e CRUD!');

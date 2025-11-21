@@ -668,29 +668,6 @@ table.md-card tbody tr:nth-child(even) {
     </div>
   </div>
 
- <!-- Mantendo bloco dashboard já existente -->
- <div class="dashboard">
-  <div class="cards">
-    <div class="card">
-      <h3>Total de Clientes</h3>
-      <p id="total-clientes">0</p>
-    </div>
-    <div class="card">
-      <h3>Total de Vendas</h3>
-      <p id="total-vendas">0</p>
-    </div>
-    <div class="card">
-      <h3>Faturamento</h3>
-      <p id="faturamento">R$ 0,00</p>
-    </div>
-  </div>
-
-  <div class="graficos">
-    <canvas id="grafico-vendas"></canvas>
-    <canvas id="grafico-pagamentos"></canvas>
-  </div>
-</div>
-
 <!-- ADIÇÃO: Página de Auditoria exclusiva para Admin (apenas adicionada) -->
 <div class="page admin-only" id="auditoria" style="display:none;">
   <h1>Logs de Auditoria</h1>
@@ -903,63 +880,7 @@ table.md-card tbody tr:nth-child(even) {
   <div id="toastMsg"></div>
 </div>
 
-<!-- Mantendo páginas duplicadas existentes -->
-<div class="page" id="clientes" style="display:none;">
-  <h1>Clientes</h1>
-  <table class="md-card" style="width:100%; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>CPF/CNPJ</th>
-        <th>Email</th>
-        <th>Telefone</th>
-        <th>Cidade</th>
-        <th>Estado</th>
-      <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="clientes-tbody"></tbody>
-  </table>
-</div>
-
-<div class="page" id="produtos" style="display:none;">
-  <h1>Produtos</h1>
-  <table class="md-card" style="width:100%; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Categoria</th>
-        <th>Preço</th>
-        <th>Descrição</th>
-        <th>Estoque</th>
-      <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="produtos-tbody"></tbody>
-  </table>
-</div>
-
-<div class="page" id="vendas" style="display:none;">
-  <h1>Vendas</h1>
-  <table class="md-card" style="width:100%; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Cliente</th>
-        <th>Vendedor</th>
-        <th>Total</th>
-        <th>Status</th>
-        <th>Forma Pagamento</th>
-        <th>Data Compra</th>
-        <th>Data Entrega</th>
-      <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="vendas-tbody"></tbody>
-  </table>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 
 /* =====================================================================
@@ -968,6 +889,13 @@ table.md-card tbody tr:nth-child(even) {
 const THEME_KEY = 'app_theme_v1';
 const FONT_SCALE_KEY = 'app_font_scale_v1';
 const AVATAR_KEY_PREFIX = 'avatar_path_';
+const DASHBOARD_METRICS_URL = 'http://localhost:3000/dashboard/metrics';
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+  minimumFractionDigits: 2
+});
+let graficoLucroChart = null;
 let currentUser = null;
 let pendingAvatarPath = null;
 const crudFormModal = document.getElementById('crudFormModal');
@@ -1265,6 +1193,18 @@ function normalizeUF(value) {
   return normalized ? normalized.substring(0, 2).toUpperCase() : null;
 }
 
+function formatCurrencyBRL(value) {
+  const amount = Number(value || 0);
+  if (Number.isNaN(amount)) return currencyFormatter.format(0);
+  return currencyFormatter.format(amount);
+}
+
+function formatMonthLabel(anoMes) {
+  if (!anoMes || anoMes.length < 7) return '-';
+  const [ano, mes] = anoMes.split('-');
+  return `${mes}/${ano.slice(-2)}`;
+}
+
 async function askForId(message) {
   const result = await openCrudForm({
     title: 'Selecionar registro',
@@ -1488,6 +1428,7 @@ function preencherUIposLogin() {
   atualizarAvatar();
   atualizarPerfilSidebar();
   updateCrudButtons();
+  carregarDashboard();
 
   /* ADIÇÃO: controle de visibilidade por função (sem remover nada) */
   const tipo = getUserRole();
@@ -1606,6 +1547,7 @@ function abrirPagina(id) {
   document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("selected"));
   document.querySelector(`[data-page="${id}"]`).classList.add("selected");
 
+  if (id === "dashboard") carregarDashboard();
   if (id === "clientes") carregarClientes();
   if (id === "produtos") carregarProdutos();
   if (id === "vendas") carregarVendas();
@@ -1902,6 +1844,131 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 /* =====================================================================
+      DASHBOARD
+===================================================================== */
+async function carregarDashboard() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.warn("Token não disponível para carregar dashboard");
+    return;
+  }
+
+  try {
+    const res = await fetch(DASHBOARD_METRICS_URL, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+
+    if (!res.ok || json.ok === false) {
+      throw new Error(json.message || "Não foi possível carregar as métricas do dashboard.");
+    }
+
+    const metrics = json.data || {};
+    atualizarCardsDashboard(metrics);
+    renderizarGraficoLucro(metrics.lucroHistorico || []);
+  } catch (err) {
+    console.error("Erro ao carregar métricas do dashboard:", err);
+    showToast("Erro", err.message || "Não foi possível carregar as métricas do dashboard");
+  }
+}
+
+function atualizarCardsDashboard(metrics = {}) {
+  const {
+    totalClientes = 0,
+    totalVendas = 0,
+    faturamento = 0,
+    lucro = 0
+  } = metrics;
+
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.textContent = value;
+    }
+  };
+
+  setText("total-clientes", totalClientes);
+  setText("total-vendas", totalVendas);
+  setText("faturamento", formatCurrencyBRL(faturamento));
+  setText("lucro", formatCurrencyBRL(lucro));
+}
+
+function renderizarGraficoLucro(historico = []) {
+  const canvas = document.getElementById("grafico-lucro");
+  if (!canvas) return;
+
+  if (typeof Chart === "undefined") {
+    console.warn("Chart.js não carregado.");
+    return;
+  }
+
+  const labels = (historico.length ? historico : [{ mes: "-", lucro: 0 }]).map((item) =>
+    formatMonthLabel(item.mes)
+  );
+  const dadosLucro = (historico.length ? historico : [{ lucro: 0 }]).map((item) =>
+    Number(item.lucro || 0)
+  );
+
+  const ctx = canvas.getContext("2d");
+  if (graficoLucroChart) {
+    graficoLucroChart.data.labels = labels;
+    graficoLucroChart.data.datasets[0].data = dadosLucro;
+    graficoLucroChart.update();
+    return;
+  }
+
+  graficoLucroChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Lucro mensal",
+          data: dadosLucro,
+          borderColor: "#43A047",
+          backgroundColor: "rgba(67, 160, 71, 0.2)",
+          borderWidth: 3,
+          tension: 0.35,
+          fill: true,
+          pointRadius: 4,
+          pointBackgroundColor: "#1B5E20"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: getComputedStyle(document.documentElement).getPropertyValue('--md-on-surface')
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => `Lucro: ${formatCurrencyBRL(context.parsed.y)}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: getComputedStyle(document.documentElement).getPropertyValue('--md-on-surface')
+          },
+          grid: { display: false }
+        },
+        y: {
+          ticks: {
+            color: getComputedStyle(document.documentElement).getPropertyValue('--md-on-surface'),
+            callback: (value) => formatCurrencyBRL(value)
+          }
+        }
+      }
+    }
+  });
+}
+
+/* =====================================================================
       CARREGAMENTO DE DADOS EXISTENTE
 ===================================================================== */
 async function carregarClientes() {
@@ -2056,6 +2123,7 @@ function renderizarVendas(vendas) {
       EXPORTAR PARA ESCOPO GLOBAL (NECESSÁRIO PARA onclick)
 ===================================================================== */
 window.abrirPagina = abrirPagina;
+window.carregarDashboard = carregarDashboard;
 window.carregarClientes = carregarClientes;
 window.carregarProdutos = carregarProdutos;
 window.carregarVendas = carregarVendas;
